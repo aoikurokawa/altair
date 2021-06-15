@@ -3,37 +3,60 @@ pragma solidity >=0.4.22 <0.9.0;
 
 contract Auction {
 
-    struct Buyer {
-        uint256 balance;
-        uint256 declareAmount;
+    address payable public beneficiary;
+    uint public auctionTimeEnd;
+
+    address public highestBidder;
+    uint public highestBid;
+
+    mapping(address => uint) pendingReturns;
+
+    bool ended;
+
+    event HighestBidIncreased(address bidder, uint amount);
+    event AuctionEnded(address winner, uint amount);
+
+    constructor(uint _biddingTime, address payable _beneficiary) {
+        beneficiary = _beneficiary;
+        auctionTimeEnd = _biddingTime;
     }
 
-    address[] buyersList;
+    function bid() payable public  {
+        require(now <= auctionTimeEnd, "Auction already ended");
+        require(msg.value > highestBid, "Value is less than highest value");
 
-    mapping(address => Buyer) buyers;
+        if (highestBid != 0) {
+            pendingReturns[highestBidder] += highestBid; 
+        }
 
-    function declareAmount() public payable {
-        require(msg.value > 0, "Amount should be more than 0");
-
-        buyers[msg.sender].declareAmount = msg.value;
-        buyersList.push(msg.sender);
+        highestBidder = msg.sender;
+        highestBid = msg.value;
     }
-    
-    function chooseHighestBuyer() view internal returns (address)  {
 
-        address highestBuyerAddress;
-        
-        for (uint i = 0; i < buyersList.length; i++) {
-            
-            if (buyers[buyersList[i]].declareAmount > buyers[buyersList[i + 1]].declareAmount) {
-                highestBuyerAddress = buyersList[i];
+    function withdraw() public returns (bool) {
+        uint amount = pendingReturns[msg.sender];
+        if (amount > 0) {
+            pendingReturns[msg.sender] = 0;
+
+            if (!msg.sender.send(amount)) {
+                pendingReturns[msg.sender] = amount;
+                return false;
             }
         }
-        return highestBuyerAddress;
+        return true;
     }
 
-    function buy() public returns (bool) {
+    function auctionEnd() public {
+        require(now >= auctionTimeEnd, "auction is still processing");
+        require(!ended, "Auction has not finished yet");
 
+        ended = true;
+        emit AuctionEnded(highestBidder, highestBid);
+
+        beneficiary.transfer(highestBid);
     }
 
+    // function() public payable { }
+
+    
 }
