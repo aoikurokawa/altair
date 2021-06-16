@@ -1,5 +1,12 @@
-const Auction = artifacts.require("Auction");
+const Auction = artifacts.require("./Auction");
 
-module.exports = function (deployer) {
-  deployer.deploy(Auction);
+const auctionSetting = {
+    biddingTime: 0,
+}
+
+module.exports = function (deployer, network, account) {
+
+    deployer.deploy(Auction, auctionSetting.biddingTime, account[0]);
+
+
 };

@@ -16,13 +16,13 @@ contract Auction {
     event HighestBidIncreased(address bidder, uint amount);
     event AuctionEnded(address winner, uint amount);
 
-    constructor(uint _biddingTime, address payable _beneficiary) {
+    constructor(uint _biddingTime, address payable _beneficiary) public {
         beneficiary = _beneficiary;
         auctionTimeEnd = _biddingTime;
     }
 
     function bid() payable public  {
-        require(now <= auctionTimeEnd, "Auction already ended");
+        require(block.timestamp <= auctionTimeEnd, "Auction already ended");
         require(msg.value > highestBid, "Value is less than highest value");
 
         if (highestBid != 0) {
@@ -53,7 +53,9 @@ contract Auction {
         ended = true;
         emit AuctionEnded(highestBidder, highestBid);
 
-        beneficiary.transfer(highestBid);
+        (bool success, ) = beneficiary.call.value(highestBid)("");
+        require(success, "Transfer failed");
+        // beneficiary.transfer(highestBid);
     }
 
     // function() public payable { }
