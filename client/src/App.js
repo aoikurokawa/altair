@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import Nav from './components/Nav';
+import GlobalStyle from './components/GlobalStyle';
 import { loadBlockchain } from './actions/loadBlockchainAction';
 import { useEffect } from 'react';
 
@@ -17,6 +18,7 @@ function App() {
 
   return (
     <div>
+      <GlobalStyle />
       <Nav accounts={accounts} />
     </div>
   );

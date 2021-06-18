@@ -31,7 +31,7 @@ const Nav = ({ accounts }) => {
         }
     };
     return (
-        <div className={classes.root}>
+        <div  className={classes.root}>
             <AppBar position="static">
                 <Toolbar>
                     <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
