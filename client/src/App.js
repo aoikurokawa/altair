@@ -13,12 +13,11 @@ function App() {
 
   useEffect(() => {
     dispatch(loadBlockchain());
-  }, []);
+  }, [accounts]);
 
   return (
     <div>
-
-      <Nav />
+      <Nav accounts={accounts} />
     </div>
   );
 }
