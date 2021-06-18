@@ -22,7 +22,7 @@ contract Auction {
     }
 
     function bid() payable public  {
-        require(block.timestamp <= auctionTimeEnd, "Auction already ended");
+        require(now <= auctionTimeEnd, "Auction already ended");
         require(msg.value > highestBid, "Value is less than highest value");
 
         if (highestBid != 0) {
