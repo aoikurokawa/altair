@@ -1,7 +1,9 @@
 import { combineReducers } from 'redux';
 
-const rootReducer = combineReducers({
+import loadBlockchainReducer from './loadBlockchainReducer';
 
+const rootReducer = combineReducers({
+    loadBlockchain: loadBlockchainReducer,
 });
 
 export default rootReducer;
