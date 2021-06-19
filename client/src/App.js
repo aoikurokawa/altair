@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import Nav from './components/Nav';
+import MediaCard from './components/MediaCard';
+import AuctionDetail from './components/AuctionDetail';
 import GlobalStyle from './components/GlobalStyle';
 import { loadBlockchain } from './actions/loadBlockchainAction';
 import { useEffect } from 'react';
@@ -20,6 +22,8 @@ function App() {
     <div>
       <GlobalStyle />
       <Nav accounts={accounts} />
+      <MediaCard />
+      <AuctionDetail />
     </div>
   );
 }
