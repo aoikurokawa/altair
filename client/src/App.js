@@ -27,7 +27,9 @@ function App() {
       <Typography variant="h4" gutterBottom>
         Attack on Titan
       </Typography>
-      <Carousel />
+      <div style={{ width: '70%' }}>
+        <Carousel />
+      </div>
       <AuctionDetail />
     </div>
   );
