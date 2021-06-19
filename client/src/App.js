@@ -22,7 +22,12 @@ function App() {
     <div>
       <GlobalStyle />
       <Nav accounts={accounts} />
-      <MediaCard />
+      <div style={{ display: 'flex', flexWrap: 'nowrap' }}>
+        <MediaCard />
+        <MediaCard />
+        <MediaCard />
+      </div>
+
       <AuctionDetail />
     </div>
   );

@@ -22,8 +22,8 @@ function MediaCard() {
     const classes = useStyles();
 
     return (
-        <Container maxWidth="md">
-            <Typography component="div" style={{ backgroundColor: '#cfe8fc', height: '90vh' }} align="justify" display="block">
+        <Container maxWidth="lg">
+            <Typography component="div" style={{ backgroundColor: '#cfe8fc', height: '50vh' }} align="justify" display="flex">
                 <Card className={classes.root}>
                     <CardActionArea>
                         <CardMedia
