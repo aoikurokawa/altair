@@ -12,7 +12,14 @@ export const loadBlockchain = () => async (dispatch) => {
         contractInstance: contractInstance, 
         accounts: accounts,
     });
-
-
+    contractInstance.methods
+        .highestBid()
+        .call()
+        .then((result) => {
+            dispatch({
+                type: "GET_HIGHESTBID", 
+                highestBid: Web3.utils.fromWei(result, "ether"),
+            });
+        });
 };
 

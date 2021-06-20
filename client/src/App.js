@@ -7,6 +7,7 @@ import Nav from './components/Nav';
 import MediaCard from './components/MediaCard';
 import AuctionDetail from './components/AuctionDetail';
 import Carousel from './components/Carouselmage';
+import DisplayPrice from './components/DisplayPrice';
 import GlobalStyle from './components/GlobalStyle';
 import { loadBlockchain } from './actions/loadBlockchainAction';
 import { useEffect } from 'react';
@@ -18,17 +19,18 @@ function App() {
 
   useEffect(() => {
     dispatch(loadBlockchain());
-  }, [accounts]);
+  }, []);
 
   return (
     <div>
       <GlobalStyle />
       <Nav accounts={accounts} />
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom style={{ padding: '5px' }}>
         Attack on Titan
       </Typography>
-      <div style={{ width: '70%' }}>
+      <div style={{ display: 'flex' }}>
         <Carousel />
+        <DisplayPrice />
       </div>
       <AuctionDetail />
     </div>
