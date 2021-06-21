@@ -21,5 +21,17 @@ export const loadBlockchain = () => async (dispatch) => {
                 highestBid: Web3.utils.fromWei(result, "ether"),
             });
         });
+
+    contractInstance.methods
+        .auctionTimeEnd()
+        .call()
+        .then((res) => {
+            let endDate = new Date(res * 1000);
+            let auctionTime = endDate.toGMTString();
+            dispatch({
+                type: "GET_AUCTIONTIMEEND", 
+                auctionTimeEnd: auctionTime,
+            });
+        });
 };
 

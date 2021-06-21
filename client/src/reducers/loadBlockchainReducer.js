@@ -1,7 +1,8 @@
 const initialState = {
     contractInstance: {},
     accounts: "",
-    highestBid: 0
+    highestBid: 0,
+    auctionTimeEnd: "",
 }
 
 const loadBlockchainReducer = (state = initialState, action) => {
@@ -17,6 +18,12 @@ const loadBlockchainReducer = (state = initialState, action) => {
             return {
                 ...state, 
                 highestBid: action.highestBid,
+            }
+
+        case "GET_AUCTIONTIMEEND": 
+            return {
+                ...state, 
+                auctionTimeEnd: action.auctionTimeEnd,
             }
 
         default:
