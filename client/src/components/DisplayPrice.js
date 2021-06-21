@@ -33,8 +33,10 @@ const DisplayPrice = () => {
     const { highestBid } = useSelector((state) => state.loadBlockchain);
     
     console.log(highestBid);
-    const bidHandler = () => {
-
+    const openModal = () => {
+        dispatch({
+            type: 'SHOW_MODAL'
+        })
     }
     // console.log(contractInstance);
     return (
@@ -56,7 +58,7 @@ const DisplayPrice = () => {
                 </Card>
             </Container>
             <Container maxWidth="lg" component="div" className={classes.buttonContainer}>
-                <Button variant="contained" size="large" color="primary" className={classes.button} onClick={bidHandler}>BID</Button>
+                <Button variant="contained" size="large" color="primary" className={classes.button} onClick={openModal}>BID</Button>
             </Container>
         </div>
     );

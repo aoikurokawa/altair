@@ -9,12 +9,14 @@ import AuctionDetail from './components/AuctionDetail';
 import Carousel from './components/Carouselmage';
 import DisplayPrice from './components/DisplayPrice';
 import GlobalStyle from './components/GlobalStyle';
+import BidModal from './components/BidModal';
 import { loadBlockchain } from './actions/loadBlockchainAction';
 import { useEffect } from 'react';
 
 function App() {
 
   const dispatch = useDispatch();
+  const { isModalVisible } = useSelector((state) => state.modal);
   const { contractInstance, accounts } = useSelector((state) => state.loadBlockchain);
 
   useEffect(() => {
@@ -33,6 +35,7 @@ function App() {
         <DisplayPrice />
       </div>
       <AuctionDetail />
+      <BidModal isModalVisible={isModalVisible} />
     </div>
   );
 }
