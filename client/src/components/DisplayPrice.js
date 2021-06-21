@@ -38,7 +38,6 @@ const DisplayPrice = () => {
             type: 'SHOW_MODAL'
         })
     }
-    // console.log(contractInstance);
     return (
         <div style={{ width: '30%', padding: '5px' }}>
             <Container maxWidth="lg" component="div">

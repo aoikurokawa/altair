@@ -70,8 +70,11 @@ const BidModal = () => {
             })
             .on("receipt", (receipt) => {
                 console.log(receipt);
-                alert("You betted!");
+                alert("Congratulations!");
             });
+        dispatch({
+            type: 'CLOSE_MODAL'
+        })
     }
 
 
