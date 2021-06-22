@@ -1,4 +1,5 @@
 import React from 'react';
+import Web3 from "web3";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from '@material-ui/core';
 import { Container } from '@material-ui/core';
@@ -19,7 +20,7 @@ const useStyles = makeStyles({
     },
     buttonContainer: {
         textAlign: 'center',
-
+        padding: '10px',
     },
     button: {
         width: '50%',
@@ -30,14 +31,34 @@ const useStyles = makeStyles({
 const DisplayPrice = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const { highestBid, auctionTimeEnd } = useSelector((state) => state.loadBlockchain);
+    const { highestBid, auctionTimeEnd, contractInstance } = useSelector((state) => state.loadBlockchain);
 
-    console.log(highestBid);
     const openModal = () => {
         dispatch({
             type: 'SHOW_MODAL'
         })
     }
+
+    const widthdrawHandler = () => {
+        contractInstance.methods
+            .withdraw()
+            .send()
+            .on("transactionHash", (hash) => {
+                console.log(hash);
+            })
+            .on("receipt", (receipt) => {
+                console.log(receipt);
+                if (receipt.events.WithdrawPendingReturns.returnValues["isSuccess"]) {
+                    let amount = receipt.events.WithdrawPendingReturns.returnValues["amount"];
+                    console.log(amount);
+                    alert(`You received ${Web3.utils.fromWei(amount, "ether")} eth! Check your Metamask wallet`);
+                } else {
+                    alert("Nothing to withdraw");
+                }
+
+            });
+    }
+
     return (
         <div style={{ width: '30%', padding: '5px' }}>
             <Container maxWidth="lg" component="div">
@@ -60,7 +81,7 @@ const DisplayPrice = () => {
                 <Button variant="contained" size="large" color="primary" className={classes.button} onClick={openModal}>BID</Button>
             </Container>
             <Container maxWidth="lg" component="div" className={classes.buttonContainer}>
-                <Button variant="contained" size="large" color="primary" className={classes.button} onClick={openModal}>WITHDRAW</Button>
+                <Button variant="contained" size="large" color="primary" className={classes.button} onClick={widthdrawHandler}>WITHDRAW</Button>
             </Container>
         </div>
     );

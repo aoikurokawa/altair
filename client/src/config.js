@@ -1,4 +1,4 @@
-export const ADDRESS = "0xd62e29fed3fb0D9d29faa227a1f6945675EC6F7b";
+export const ADDRESS = "0x2B2318124e39EE8A5b8F59ca38336841Ca8aB4Ad";
 
 export const ABI = [
   {
@@ -54,6 +54,31 @@ export const ABI = [
       }
     ],
     "name": "HighestBidIncreased",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "pender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isSuccess",
+        "type": "bool"
+      }
+    ],
+    "name": "WithdrawPendingReturns",
     "type": "event"
   },
   {

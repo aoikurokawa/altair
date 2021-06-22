@@ -26,8 +26,9 @@ export const loadBlockchain = () => async (dispatch) => {
         .auctionTimeEnd()
         .call()
         .then((res) => {
-            let endDate = new Date(res * 1000);
-            let auctionTime = endDate.toGMTString();
+            
+            let endDate = new Date(res * 1);
+            let auctionTime = endDate.toDateString();
             dispatch({
                 type: "GET_AUCTIONTIMEEND", 
                 auctionTimeEnd: auctionTime,
