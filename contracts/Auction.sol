@@ -2,31 +2,35 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract Auction {
-
     address payable public beneficiary;
-    uint public auctionTimeEnd;
+    uint256 public auctionTimeEnd;
 
     address public highestBidder;
-    uint public highestBid;
+    uint256 public highestBid;
 
-    mapping(address => uint) pendingReturns;
+    mapping(address => uint256) pendingReturns;
 
     bool ended;
 
-    event HighestBidIncreased(address bidder, uint amount);
-    event AuctionEnded(address winner, uint amount);
+    event HighestBidIncreased(address bidder, uint256 amount);
+    event AuctionEnded(address winner, uint256 amount);
+    event WithdrawPendingReturns(
+        address pender,
+        uint256 amount,
+        bool isSuccess
+    );
 
-    constructor(uint _biddingTime, address payable _beneficiary) public {
+    constructor(uint256 _biddingTime, address payable _beneficiary) public {
         beneficiary = _beneficiary;
         auctionTimeEnd = _biddingTime;
     }
 
-    function bid() payable public  {
+    function bid() public payable {
         require(now <= auctionTimeEnd, "Auction already ended");
         require(msg.value > highestBid, "Value is less than highest value");
 
         if (highestBid != 0) {
-            pendingReturns[highestBidder] += highestBid; 
+            pendingReturns[highestBidder] += highestBid;
         }
 
         highestBidder = msg.sender;
@@ -34,16 +38,24 @@ contract Auction {
     }
 
     function withdraw() public returns (bool) {
-        uint amount = pendingReturns[msg.sender];
+        bool isSuccess = false;
+        uint256 amount = pendingReturns[msg.sender];
         if (amount > 0) {
             pendingReturns[msg.sender] = 0;
 
             if (!msg.sender.send(amount)) {
                 pendingReturns[msg.sender] = amount;
-                return false;
+                emit WithdrawPendingReturns(msg.sender, amount, isSuccess);
+                return isSuccess;
+            } else {
+                isSuccess = true;
+                emit WithdrawPendingReturns(msg.sender, amount, isSuccess);
+                return isSuccess;
             }
+        } else {
+            emit WithdrawPendingReturns(msg.sender, amount, isSuccess);
         }
-        return true;
+
     }
 
     function auctionEnd() public {
@@ -57,8 +69,4 @@ contract Auction {
         require(success, "Transfer failed");
         // beneficiary.transfer(highestBid);
     }
-
-    // function() public payable { }
-
-    
 }
