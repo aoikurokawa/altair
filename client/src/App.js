@@ -1,19 +1,21 @@
-import Web3 from 'web3';
+import React, {useEffect} from 'react';
+import { Switch, Route, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
-import { Typography } from '@material-ui/core';
 
 import Nav from './components/Nav';
-import MediaCard from './components/MediaCard';
+import Home from './pages/Home';
+import Auction from './pages/Auction';
+import SpeedDials from './components/SpeedDials';
 import AuctionDetail from './components/AuctionDetail';
 import Carousel from './components/Carouselmage';
 import DisplayPrice from './components/DisplayPrice';
 import GlobalStyle from './components/GlobalStyle';
 import BidModal from './components/BidModal';
 import { loadBlockchain } from './actions/loadBlockchainAction';
-import { useEffect } from 'react';
 
 function App() {
+
+  const location = useLocation();
 
   const dispatch = useDispatch();
   const { isModalVisible } = useSelector((state) => state.modal);
@@ -27,14 +29,18 @@ function App() {
     <div>
       <GlobalStyle />
       <Nav accounts={accounts} />
-      <Typography variant="h4" gutterBottom style={{ padding: '5px' }}>
-        Attack on Titan
-      </Typography>
-      <div style={{ display: 'flex' }}>
-        <Carousel />
-        <DisplayPrice />
-      </div>
-      <AuctionDetail />
+      <Switch location={location} key={location.pathname}>
+        <Route path="/" exact>
+          <Home />
+        </Route>
+        <Route path="/auction" exact>
+          <Auction />
+        </Route>
+        <Route path="/upload" exact>
+          <Auction />
+        </Route>
+      </Switch>
+      <SpeedDials />
       <BidModal isModalVisible={isModalVisible} />
     </div>
   );

@@ -4,8 +4,6 @@ import { GridList } from '@material-ui/core';
 import { GridListTile } from '@material-ui/core';
 import { GridListTileBar } from '@material-ui/core';
 
-// import { attackOnTitan } from '../assets/auctionContent.json';
-
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
