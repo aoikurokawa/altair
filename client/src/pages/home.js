@@ -36,7 +36,7 @@ const Home = () => {
     const classes = useStyles();
     return (
         <div className={classes.root}>
-            <img src={HomeImage} alt="painter" style={{ height: '60.4rem', width: '100%' }} />
+            <img src={HomeImage} alt="painter" style={{ height: '61rem', width: '100%' }} />
             <Container className={classes.textContainer}>Auction DApp</Container>
             <Container className={classes.buttonContainer}>
                 <Button variant="contained" className={classes.button}>Auction</Button>
@@ -46,3 +46,4 @@ const Home = () => {
 }
 
 export default Home;
+
