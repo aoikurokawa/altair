@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles"
 import { AppBar } from '@material-ui/core';
 import { Toolbar } from '@material-ui/core';
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Nav = ({ accounts }) => {
     const classes = useStyles();
-    
+
     const metamaskHandler = async () => {
         try {
             await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -38,9 +39,10 @@ const Nav = ({ accounts }) => {
         <div className={classes.root}>
             <AppBar position="static">
                 <Toolbar>
-                    
                     <Typography variant="h5" className={classes.title}>
-                        Art Market
+                        <Link to="/" style={{color: 'white', textDecoration: 'none'}}>
+                            Art Market
+                        </Link>
                     </Typography>
                     {
                         accounts === "" ?
