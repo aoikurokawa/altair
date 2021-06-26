@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Web3 from "web3";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from '@material-ui/core';
@@ -32,6 +32,10 @@ const DisplayPrice = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { highestBid, auctionTimeEnd, contractInstance } = useSelector((state) => state.loadBlockchain);
+
+    useEffect(() =>  {
+        console.log(contractInstance);
+    }, [])
 
     const openModal = () => {
         dispatch({

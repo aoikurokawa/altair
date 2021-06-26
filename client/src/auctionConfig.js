@@ -1,6 +1,6 @@
-export const ADDRESS = "0x2B2318124e39EE8A5b8F59ca38336841Ca8aB4Ad";
+export const AUCTIONADDRESS = "0x83a139d4C5B982b6010d6b6E8cCA0F2609eDC26a";
 
-export const ABI = [
+export const AUCTIONABI = [
   {
     "inputs": [
       {
@@ -14,7 +14,6 @@ export const ABI = [
         "type": "address"
       }
     ],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -82,7 +81,6 @@ export const ABI = [
     "type": "event"
   },
   {
-    "constant": true,
     "inputs": [],
     "name": "auctionTimeEnd",
     "outputs": [
@@ -92,12 +90,11 @@ export const ABI = [
         "type": "uint256"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
   },
   {
-    "constant": true,
     "inputs": [],
     "name": "beneficiary",
     "outputs": [
@@ -107,12 +104,11 @@ export const ABI = [
         "type": "address"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
   },
   {
-    "constant": true,
     "inputs": [],
     "name": "highestBid",
     "outputs": [
@@ -122,12 +118,11 @@ export const ABI = [
         "type": "uint256"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
   },
   {
-    "constant": true,
     "inputs": [],
     "name": "highestBidder",
     "outputs": [
@@ -137,21 +132,19 @@ export const ABI = [
         "type": "address"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
   },
   {
-    "constant": false,
     "inputs": [],
     "name": "bid",
     "outputs": [],
-    "payable": true,
     "stateMutability": "payable",
-    "type": "function"
+    "type": "function",
+    "payable": true
   },
   {
-    "constant": false,
     "inputs": [],
     "name": "withdraw",
     "outputs": [
@@ -161,17 +154,15 @@ export const ABI = [
         "type": "bool"
       }
     ],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [],
     "name": "auctionEnd",
     "outputs": [],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   }
 ];
+

@@ -5,10 +5,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import Nav from './components/Nav';
 import Home from './pages/Home';
 import Auction from './pages/Auction';
+import Upload from './pages/Upload';
 import SpeedDials from './components/SpeedDials';
 import GlobalStyle from './components/GlobalStyle';
 import BidModal from './components/BidModal';
 import { loadBlockchain } from './actions/loadBlockchainAction';
+import { artTokenAction } from './actions/artTokenAction';
 
 function App() {
 
@@ -20,6 +22,7 @@ function App() {
 
   useEffect(() => {
     dispatch(loadBlockchain());
+    dispatch(artTokenAction());
   }, []);
 
   return (
@@ -34,7 +37,7 @@ function App() {
           <Auction />
         </Route>
         <Route path="/upload" exact>
-          <Auction />
+          <Upload />
         </Route>
       </Switch>
       <SpeedDials />
