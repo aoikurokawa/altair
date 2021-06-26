@@ -11,6 +11,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import PublishIcon from '@material-ui/icons/Publish';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import { useMoralis } from 'react-moralis';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 
 const actions = [
   { icon: <PublishIcon />, name: 'Upload', pathname: 'upload' },
-  { icon: <ShoppingCartIcon />, name: 'Auction', pathname: 'Auction' },
+  { icon: <ShoppingCartIcon />, name: 'Auction', pathname: 'auction' },
   { icon: <FileCopyIcon />, name: 'Copy', pathname: '' },
   { icon: <SaveIcon />, name: 'Save', pathname: '' },
   { icon: <PrintIcon />, name: 'Print', pathname: '' },
@@ -52,6 +53,7 @@ const SpeedDials = () => {
   const [direction, setDirection] = React.useState('up');
   const [open, setOpen] = React.useState(false);
   const [hidden, setHidden] = React.useState(false);
+  const { isAuthenticated } = useMoralis();
 
   const handleDirectionChange = (event) => {
     setDirection(event.target.value);
@@ -61,13 +63,13 @@ const SpeedDials = () => {
     setHidden(event.target.checked);
   };
 
-  const handleAction = (functionType) => {
-    switch (functionType) {
-      case "Upload":
+  const handleAction = (pathname) => {
+    switch (pathname) {
+      case "upload":
         history.push("/upload");
         break;
 
-      case "Auction":
+      case "auction":
         history.push("/auction");
         break;
 
@@ -102,7 +104,13 @@ const SpeedDials = () => {
               key={action.name}
               icon={action.icon}
               tooltipTitle={action.name}
-              onClick={() => history.push(`/${action.pathname}`)}
+              onClick={() => {
+                if (!isAuthenticated) {
+                  alert("Please Login");
+                } else {
+                  history.push(`/${action.pathname}`)
+                }
+              }}
             />
           ))}
         </SpeedDial>

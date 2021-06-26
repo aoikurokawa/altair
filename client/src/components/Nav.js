@@ -5,7 +5,9 @@ import { AppBar } from '@material-ui/core';
 import { Toolbar } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 import { Button } from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import { useMoralis } from 'react-moralis'
+
 
 import styled from 'styled-components';
 
@@ -29,8 +31,8 @@ const useStyles = makeStyles((theme) => ({
 const Nav = ({ accounts }) => {
     const classes = useStyles();
 
-    const { authenticate, isAuthenticated } = useMoralis();
-    
+    const { authenticate, isAuthenticated, authError, logout } = useMoralis();
+
     return (
         <div className={classes.root}>
             <AppBar position="static">
@@ -40,13 +42,26 @@ const Nav = ({ accounts }) => {
                             Art Market
                         </Link>
                     </Typography>
+
                     {
                         isAuthenticated ?
-                            <Typography variant="h6" component="h6">Accounts: {accounts}</Typography>
+                            <div>
+                                <Typography variant="h6" component="h6">Accounts: {accounts}</Typography>
+                                <Button variant="outlined" color="inherit" onClick={logout} onClose={() => { }}>
+                                    Logout
+                                </Button>
+                            </div>
                             :
-                            <Button variant="outlined" color="inherit" onClick={authenticate}>
-                                Login
-                            </Button>
+                            <div>
+                                <Button variant="outlined" color="inherit" onClick={authenticate}>
+                                    Login
+                                </Button>
+                                <Button variant="outlined" color="inherit">
+                                    <Link to="/signup" style={{ color: 'white', textDecoration: 'none' }}>
+                                        Sign Up
+                                    </Link>
+                                </Button>
+                            </div>
                     }
                 </Toolbar>
             </AppBar>
