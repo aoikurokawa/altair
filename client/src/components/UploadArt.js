@@ -5,13 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMoralis, useMoralisFile, useMoralisQuery } from 'react-moralis';
 
 const useStyles = makeStyles({
-    root: {
-        height: '60.4rem',
-        flexGrow: 1,
-    },
-    uploadTy: {
-        padding: '2rem',
-    },
     inputContainer: {
         width: '100%',
         textAlign: 'center',
@@ -32,11 +25,6 @@ const useStyles = makeStyles({
     },
     buttonContainer: {
         textAlign: 'center',
-    },
-    circular: {
-        height: '61rem',
-        textAlign: 'center',
-        paddingTop: '50%',
     },
 })
 

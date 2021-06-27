@@ -17,27 +17,6 @@ const useStyles = makeStyles({
     uploadContainer: {
         padding: '2rem',
     },
-    inputContainer: {
-        width: '100%',
-        textAlign: 'center',
-    },
-    input: {
-        display: 'none',
-    },
-    imgContainer: {
-        borderWidth: '5px',
-        borderStyle: 'double',
-        borderColor: 'arkslategray',
-        height: '35rem',
-    },
-    img: {
-        width: '100%',
-        height: '100%',
-        padding: '24px 0px',
-    },
-    buttonContainer: {
-        textAlign: 'center',
-    },
     circular: {
         height: '61rem',
         textAlign: 'center',
@@ -71,7 +50,6 @@ const UploadPage = () => {
                         </Grid>
                     </Grid>
                 </Grid>
-
             }
         </div>
 

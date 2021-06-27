@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -58,7 +58,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const IpfsForm = () => {
-    const classes = useStyles();
+    const classes = useStyles("");
+    const [ipfsHash, setIpfsHash] = useState();
     return (
         <div className={classes.paper}>
             <Avatar className={classes.avatar}>
@@ -71,18 +72,17 @@ const IpfsForm = () => {
                 <TextField
                     variant="outlined"
                     margin="normal"
-                    required
                     fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
-                    autoFocus
+                    id="hash"
+                    label="IPFS Hash"
+                    name="hash"
+                    autoComplete="hash"
+                    value={ipfsHash}
+                    disabled
                 />
                 <TextField
                     variant="outlined"
                     margin="normal"
-                    required
                     fullWidth
                     name="password"
                     label="Password"
