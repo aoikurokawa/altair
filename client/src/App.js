@@ -6,7 +6,7 @@ import { useMoralis } from 'react-moralis';
 import Nav from './components/Nav';
 import Home from './pages/Home';
 import Auction from './pages/Auction';
-import Upload from './pages/Upload';
+import UploadPage from './pages/UploadPage';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import SpeedDials from './components/SpeedDials';
@@ -45,7 +45,7 @@ function App() {
           <Auction />
         </Route>
         <Route path="/upload" exact>
-          <Upload />
+          <UploadPage />
         </Route>
       </Switch>
       <SpeedDials />
