@@ -47,7 +47,7 @@ const UploadArt = () => {
         await saveFile(name, uploadImage, { metadata, saveIPFS: true })
             .then((result) => {
                 dispatch({
-                    type: "IPFS_HANDLER", 
+                    type: "IPFS_UPLOAD", 
                     ipfsHash: result._hash, 
                     ipfsUrl: result._ipfs,
                 });
@@ -56,18 +56,6 @@ const UploadArt = () => {
                 alert(error);
             });
     };
-
-    const mint = (link) => {
-        contractInstance.methods
-            .mint(link)
-            .send()
-            .on(("transactionHash"), (hash) => {
-                console.log(hash);
-            })
-            .on(("receipt"), (receipt) => {
-                console.log(receipt);
-            })
-    }
 
     return (
         <>

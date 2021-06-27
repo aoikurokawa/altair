@@ -14,7 +14,7 @@ const artTokenReducer = (state = initialState, action) => {
                 accounts: action.accounts,
             };
 
-        case "IPFS_HANDLER":
+        case "IPFS_UPLOAD":
             return {
                 ...state, 
                 ipfsHash: action.ipfsHash, 
