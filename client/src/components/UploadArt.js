@@ -49,6 +49,7 @@ const UploadArt = () => {
                     type: "IPFS_UPLOAD", 
                     ipfsHash: result._hash, 
                     ipfsUrl: result._ipfs,
+                    name: name,
                 });
             })
             .catch((error) => {

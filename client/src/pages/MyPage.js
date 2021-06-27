@@ -85,7 +85,7 @@ const MyPage = () => {
                                             <MoreVertIcon />
                                         </IconButton>
                                     }
-                                    title="Shrimp and Chorizo Paella"
+                                    title={d.attributes["Name"]}
                                     subheader="September 14, 2016"
                                 />
                                 <CardMedia

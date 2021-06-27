@@ -17,7 +17,7 @@ export const getArtTokenContract = () => async (dispatch) => {
     });
 }
 
-export const mint = (hash, url) => async (dispatch) => {
+export const mint = (hash, url, name) => async (dispatch) => {
     const web3 = new Web3(Web3.givenProvider || "http:localhost:8545");
     const accounts = await web3.eth.getAccounts();
     const selectedAccounts = window.ethereum.selectedAddress;
@@ -37,6 +37,7 @@ export const mint = (hash, url) => async (dispatch) => {
             nft.set('Account', accounts[0]);
             nft.set('IpfsHash', hash);
             nft.set('IpfsUrl', url);
+            nft.set('Name', name);
             nft.save();
         });
 }
