@@ -17,28 +17,41 @@ export const getArtTokenContract = () => async (dispatch) => {
     });
 }
 
-export const mint = async (link) => async (dispatch) => {
-    const tokenId = 0;
+export const mint = (hash, url) => async (dispatch) => {
     const web3 = new Web3(Web3.givenProvider || "http:localhost:8545");
     const accounts = await web3.eth.getAccounts();
     const selectedAccounts = window.ethereum.selectedAddress;
     const contractInstance = new web3.eth.Contract(ARTTOKENABI, ARTTOKENADDRESS, { from: accounts[0] });
 
-    console.log(link);
-
     contractInstance.methods
-        .mint("https://ipfs.moralis.io:2053/ipfs/QmboUXweMtpApzYMZMdwTSDtWD7Euos6NMfJHbuutcFrS3")
+        .mint(url)
         .send()
         .on(("transactionHash"), (hash) => {
             console.log(hash);
         })
         .on(("receipt"), (receipt) => {
-            tokenId = parseInt(receipt.events.Transfer.returnValues[2]);
+            const tokenId = receipt.events.Transfer.returnValues[2];
+            console.log(tokenId);
             const nft = new Moralis.Object('Nft');
             nft.set('TokenId', tokenId);
             nft.set('Account', accounts[0]);
+            nft.set('IpfsHash', hash);
+            nft.set('IpfsUrl', url);
             nft.save();
         });
+}
 
+export const getToken = (tokenId) => async (dispatch) => {
+    const web3 = new Web3(Web3.givenProvider || "http:localhost:8545");
+    const accounts = await web3.eth.getAccounts();
+    const selectedAccounts = window.ethereum.selectedAddress;
+    const contractInstance = new web3.eth.Contract(ARTTOKENABI, ARTTOKENADDRESS, { from: accounts[0] });
+
+    contractInstance.methods
+        .getTokenDetail(tokenId)
+        .call()
+        .then((res) => {
+            console.log(res);
+        })
 }
 

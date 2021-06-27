@@ -9,7 +9,10 @@ import Auction from './pages/Auction';
 import UploadPage from './pages/UploadPage';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
+import MyCollection from './pages/MyCollection';
+import MyPage from './pages/MyPage';
 import SpeedDials from './components/SpeedDials';
+import Progress from './components/Progress';
 import GlobalStyle from './components/GlobalStyle';
 import BidModal from './components/BidModal';
 import { loadBlockchain } from './actions/loadBlockchainAction';
@@ -19,7 +22,7 @@ function App() {
   const location = useLocation();
   const dispatch = useDispatch();
   const { isModalVisible } = useSelector((state) => state.modal);
-  const { contractInstance, accounts } = useSelector((state) => state.loadBlockchain);
+  const { isLoading } = useSelector((state) => state.progress);
   const { isAuthenticated } = useMoralis();
 
   useEffect(() => {
@@ -30,7 +33,7 @@ function App() {
   return (
     <div>
       <GlobalStyle />
-      <Nav accounts={accounts} />
+      <Nav />
       <Switch location={location} key={location.pathname}>
         <Route path="/" exact>
           <Home />
@@ -47,8 +50,15 @@ function App() {
         <Route path="/upload" exact>
           <UploadPage />
         </Route>
+        <Route path="/mypage" exact>
+          <MyPage />
+        </Route>
+        <Route path="/mycollection" exact>
+          <MyCollection />
+        </Route>
       </Switch>
       <SpeedDials />
+      <Progress isLoading={isLoading} />
       <BidModal isModalVisible={isModalVisible} />
     </div>
   );

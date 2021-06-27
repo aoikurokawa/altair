@@ -35,7 +35,6 @@ const UploadArt = () => {
     const [imageUrl, setImageUrl] = useState();
     const [name, setName] = useState("");
     const { accounts } = useSelector((state) => state.loadBlockchain);
-    const { contractInstance } = useSelector((state) => state.artToken);
     const { saveFile, } = useMoralisFile();
 
     const createNftHandler = async () => {

@@ -35,12 +35,8 @@ const IpfsForm = () => {
     const dispatch = useDispatch();
     const { ipfsHash, ipfsUrl } = useSelector((state) => state.artToken);
 
-    useEffect(() => {
-
-    }, [ipfsHash])
-
     const mintHandler = () => {
-        dispatch(mint(ipfsUrl));
+        dispatch(mint(ipfsHash, ipfsUrl));
     }
 
     return (

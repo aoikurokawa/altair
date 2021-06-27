@@ -55,29 +55,6 @@ const SpeedDials = () => {
   const [hidden, setHidden] = React.useState(false);
   const { isAuthenticated } = useMoralis();
 
-  const handleDirectionChange = (event) => {
-    setDirection(event.target.value);
-  };
-
-  const handleHiddenChange = (event) => {
-    setHidden(event.target.checked);
-  };
-
-  const handleAction = (pathname) => {
-    switch (pathname) {
-      case "upload":
-        history.push("/upload");
-        break;
-
-      case "auction":
-        history.push("/auction");
-        break;
-
-      default:
-        break;
-    }
-  };
-
   const handleClose = () => {
     setOpen(false);
   }

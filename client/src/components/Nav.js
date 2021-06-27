@@ -1,12 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles"
-import { AppBar } from '@material-ui/core';
+import { AppBar, Menu, MenuItem } from '@material-ui/core';
 import { Toolbar } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useMoralis } from 'react-moralis'
+import { IconButton } from '@material-ui/core';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 
 import styled from 'styled-components';
@@ -19,8 +21,8 @@ const useStyles = makeStyles((theme) => ({
         zIndex: '10',
         top: '0',
     },
-    menuButton: {
-        marginRight: theme.spacing(2),
+    menu: {
+
     },
     title: {
         flexGrow: 1,
@@ -28,10 +30,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const Nav = ({ accounts }) => {
+const Nav = () => {
     const classes = useStyles();
-
+    const histry = useHistory();
+    const menuId = 'primary-search-account-menu';
+    const [auth, setAuth] = React.useState(true);
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
     const { authenticate, isAuthenticated, authError, logout } = useMoralis();
+
+    const handleMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+    }
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     return (
         <div className={classes.root}>
@@ -46,10 +60,50 @@ const Nav = ({ accounts }) => {
                     {
                         isAuthenticated ?
                             <div>
-                                <Typography variant="h6" component="h6">Accounts: {accounts}</Typography>
-                                <Button variant="outlined" color="inherit" onClick={logout} onClose={() => { }}>
-                                    Logout
-                                </Button>
+                                <IconButton
+                                    edge="end"
+                                    aria-label="account of current user"
+                                    aria-controls={menuId}
+                                    aria-haspopup="true"
+                                    color="inherit"
+                                    onClick={handleMenu}
+                                >
+                                    <AccountCircleIcon fontSize="large" />
+                                </IconButton>
+                                <Menu
+                                    id="menu-appbar"
+                                    anchorEl={anchorEl}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    keepMounted
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={open}
+                                    onClose={handleClose}
+                                >
+                                    <MenuItem
+                                        onClick={() => {
+                                            histry.push("/mypage");
+                                            setAnchorEl(null);
+                                        }}
+                                    >
+                                        My Page
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            histry.push("/mycollection");
+                                            setAnchorEl(null);
+                                        }}
+                                    >
+                                        My Collection
+                                    </MenuItem>
+                                    <MenuItem onClick={handleClose}>My Favorites</MenuItem>
+                                    <MenuItem onClick={logout}>Logout</MenuItem>
+                                </Menu>
                             </div>
                             :
                             <div>
