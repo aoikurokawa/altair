@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/core';
 import { useMoralis } from 'react-moralis';
 
-import { artTokenAction } from '../actions/artTokenAction';
+import { getArtTokenContract } from '../actions/artTokenAction';
 import UploadArt from '../components/UploadArt';
 import IpfsForm from '../components/IpfsForm';
 
@@ -22,14 +22,14 @@ const useStyles = makeStyles({
         textAlign: 'center',
         paddingTop: '50%',
     },
-})
+});
 
 const UploadPage = () => {
     const dispatch = useDispatch();
     const { isUploading } = useMoralis();
 
     useEffect(() => {
-        dispatch(artTokenAction());
+        dispatch(getArtTokenContract());
     }, []);
 
     const classes = useStyles();

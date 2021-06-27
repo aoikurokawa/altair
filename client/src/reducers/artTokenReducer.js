@@ -1,6 +1,8 @@
 const initialState = {
     contractInstance: {}, 
-    accounts: "", 
+    accounts: "",
+    ipfsHash: "", 
+    ipfsUrl: "", 
 }
 
 const artTokenReducer = (state = initialState, action) => {
@@ -10,6 +12,13 @@ const artTokenReducer = (state = initialState, action) => {
                 ...state, 
                 contractInstance: action.contractInstance, 
                 accounts: action.accounts,
+            };
+
+        case "IPFS_HANDLER":
+            return {
+                ...state, 
+                ipfsHash: action.ipfsHash, 
+                ipfsUrl: action.ipfsUrl,
             };
 
         default: 

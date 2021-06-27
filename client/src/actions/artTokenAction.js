@@ -1,7 +1,7 @@
 import Web3 from "web3";
 import { ARTTOKENADDRESS, ARTTOKENABI } from '../artTokenConfig';
 
-export const artTokenAction = () => async (dispatch) => {
+export const getArtTokenContract = () => async (dispatch) => {
     const web3 = new Web3(Web3.givenProvider || "http:localhost:8545");
     const accounts = await web3.eth.getAccounts();
     const selectedAccounts = window.ethereum.selectedAddress;
@@ -13,3 +13,4 @@ export const artTokenAction = () => async (dispatch) => {
         accounts: accounts
     });
 }
+

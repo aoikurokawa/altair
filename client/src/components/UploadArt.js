@@ -29,6 +29,7 @@ const useStyles = makeStyles({
 })
 
 const UploadArt = () => {
+    const dispatch = useDispatch();
     const classes = useStyles();
     const [uploadImage, setUploadImage] = useState();
     const [imageUrl, setImageUrl] = useState();
@@ -40,12 +41,16 @@ const UploadArt = () => {
     const createNftHandler = async () => {
         const metadata = {
             name: name,
-            accounts: accounts
+            accounts: accounts[0]
         };
 
         await saveFile(name, uploadImage, { metadata, saveIPFS: true })
             .then((result) => {
-                mint(result._ipfs);
+                dispatch({
+                    type: "IPFS_HANDLER", 
+                    ipfsHash: result._hash, 
+                    ipfsUrl: result._ipfs,
+                });
             })
             .catch((error) => {
                 alert(error);
@@ -115,10 +120,11 @@ const UploadArt = () => {
             </form>
             <Container className={classes.buttonContainer}>
                 <Typography component="p">
-                    Create a NFT with your account and NFT's name
+                    We will upload the your work to IPFS to create your own NFT
+                    
                 </Typography>
-                <Button variant="contained" color="primary" onClick={() => mint("hello")}>
-                    Create NFT
+                <Button variant="contained" color="primary" onClick={createNftHandler}>
+                    UPLOAD TO IPFS
                 </Button>
             </Container>
         </>

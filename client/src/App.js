@@ -13,7 +13,7 @@ import SpeedDials from './components/SpeedDials';
 import GlobalStyle from './components/GlobalStyle';
 import BidModal from './components/BidModal';
 import { loadBlockchain } from './actions/loadBlockchainAction';
-import { artTokenAction } from './actions/artTokenAction';
+import { getArtTokenContract } from './actions/artTokenAction';
 
 function App() {
   const location = useLocation();
@@ -24,7 +24,7 @@ function App() {
 
   useEffect(() => {
     dispatch(loadBlockchain());
-    dispatch(artTokenAction());
+    dispatch(getArtTokenContract());
   }, []);
 
   return (
