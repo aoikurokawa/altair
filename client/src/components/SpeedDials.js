@@ -10,7 +10,7 @@ import PrintIcon from '@material-ui/icons/Print';
 import ShareIcon from '@material-ui/icons/Share';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import PublishIcon from '@material-ui/icons/Publish';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import GavelIcon from '@material-ui/icons/Gavel';
 import { useMoralis } from 'react-moralis';
 
 const useStyles = makeStyles((theme) => ({
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 
 const actions = [
   { icon: <PublishIcon />, name: 'Upload', pathname: 'upload' },
-  { icon: <ShoppingCartIcon />, name: 'Auction', pathname: 'auction' },
+  { icon: <GavelIcon />, name: 'Auction', pathname: 'auction' },
   { icon: <FileCopyIcon />, name: 'Copy', pathname: '' },
   { icon: <SaveIcon />, name: 'Save', pathname: '' },
   { icon: <PrintIcon />, name: 'Print', pathname: '' },

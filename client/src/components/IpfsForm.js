@@ -33,10 +33,10 @@ const useStyles = makeStyles((theme) => ({
 const IpfsForm = () => {
     const classes = useStyles("");
     const dispatch = useDispatch();
-    const { ipfsHash, ipfsUrl } = useSelector((state) => state.artToken);
+    const { ipfsHash, ipfsUrl, name } = useSelector((state) => state.artToken);
 
     const mintHandler = () => {
-        dispatch(mint(ipfsHash, ipfsUrl));
+        dispatch(mint(ipfsHash, ipfsUrl, name));
     }
 
     return (

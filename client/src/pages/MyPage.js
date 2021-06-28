@@ -3,9 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMoralisQuery } from 'react-moralis';
 import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, CardActions, Collapse, Link, makeStyles } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import GavelIcon from '@material-ui/icons/Gavel';
 import { red } from '@material-ui/core/colors';
 import clsx from 'clsx';
 import { Carousel } from 'react-bootstrap';
@@ -15,12 +13,14 @@ import { CircularProgress } from '@material-ui/core';
 const useStyles = makeStyles((theme) => ({
     root: {
         height: '60.4rem',
+        paddingTop: '1rem', 
+        padding: '0rem 7rem',
     },
     cardRoot: {
 
     },
     carouselItem: {
-        backgroundColor: '#53c653',
+        backgroundColor: '#000080',
         padding: '88px 140px',
     },
     media: {
@@ -53,7 +53,6 @@ const MyPage = () => {
     useEffect(() => {
         const array = [];
         data.map((d) => {
-            console.log(d);
             if (d.attributes["Account"] === accounts[0]) {
                 if (d.attributes["IpfsUrl"] !== undefined) {
                     array.push(d);
@@ -63,16 +62,21 @@ const MyPage = () => {
         setArrayData(array);
     }, [data]);
 
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
-    };
+    const handleModal = () => {
+        dispatch({
+            type: "SHOW_MODAL"
+        })
+    }
 
     return (
         <div className={classes.root}>
+            <Typography align="center" component="h1" variant="h3">
+                My Page
+            </Typography>
             <Carousel>
                 {arrayData.map((d) => {
                     return (
-                        <Carousel.Item className={classes.carouselItem}>
+                        <Carousel.Item className={classes.carouselItem} key={d.id}>
                             <Card className={classes.cardRoot}>
                                 <CardHeader
                                     avatar={
@@ -81,12 +85,12 @@ const MyPage = () => {
                                         </Avatar>
                                     }
                                     action={
-                                        <IconButton aria-label="settings">
-                                            <MoreVertIcon />
+                                        <IconButton aria-label="settings" onClick={handleModal}>
+                                            <GavelIcon />
                                         </IconButton>
                                     }
                                     title={d.attributes["Name"]}
-                                    subheader="September 14, 2016"
+                                    
                                 />
                                 <CardMedia
                                     className={classes.media}

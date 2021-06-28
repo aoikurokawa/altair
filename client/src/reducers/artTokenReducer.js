@@ -3,6 +3,7 @@ const initialState = {
     accounts: "",
     ipfsHash: "", 
     ipfsUrl: "", 
+    name: "",
 }
 
 const artTokenReducer = (state = initialState, action) => {
@@ -19,7 +20,16 @@ const artTokenReducer = (state = initialState, action) => {
                 ...state, 
                 ipfsHash: action.ipfsHash, 
                 ipfsUrl: action.ipfsUrl,
+                name: action.name,
             };
+
+        case "IPFS_CLEAR": 
+            return {
+                ...state, 
+                ipfsHash: "", 
+                ipfsUrl: "", 
+                name: "",
+            }
 
         default: 
             return {

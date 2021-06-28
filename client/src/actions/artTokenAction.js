@@ -1,6 +1,5 @@
 import Web3 from "web3";
 import { ARTTOKENADDRESS, ARTTOKENABI } from '../artTokenConfig';
-import { useNewMoralisObject } from 'react-moralis';
 
 const Moralis = require('moralis');
 
@@ -23,6 +22,8 @@ export const mint = (hash, url, name) => async (dispatch) => {
     const selectedAccounts = window.ethereum.selectedAddress;
     const contractInstance = new web3.eth.Contract(ARTTOKENABI, ARTTOKENADDRESS, { from: accounts[0] });
 
+    console.log(name);
+
     contractInstance.methods
         .mint(url)
         .send()
@@ -39,6 +40,10 @@ export const mint = (hash, url, name) => async (dispatch) => {
             nft.set('IpfsUrl', url);
             nft.set('Name', name);
             nft.save();
+
+            dispatch({
+                type: "IPFS_CLEAR", 
+            })
         });
 }
 
