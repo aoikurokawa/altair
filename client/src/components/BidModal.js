@@ -7,6 +7,7 @@ import { Backdrop } from '@material-ui/core';
 import { Fade } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import { Container } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -44,7 +45,7 @@ const BidModal = () => {
     const [price, setPrice] = useState(0);
     const classes = useStyles();
     const { contractInstance, accounts } = useSelector((state) => state.loadBlockchain);
-    const { isModalVisible, } = useSelector((state) => state.modal);
+    const { isModalVisible, functionType, title } = useSelector((state) => state.modal);
     const dispatch = useDispatch();
 
     const handleClose = () => {
@@ -77,6 +78,8 @@ const BidModal = () => {
         })
     }
 
+    console.log(functionType);
+
 
     return (
         <Modal
@@ -93,15 +96,33 @@ const BidModal = () => {
         >
             <Fade in={isModalVisible}>
                 <div className={classes.paper}>
-                    <h2 id="transition-modal-title">Input Price</h2>
-                    <div className={classes.inputDiv}>
-                        <input type="number" className={classes.input} onChange={(e) => setPrice(e.target.value)} value={price} />
-                        <p>ETH</p>
-                    </div>
-                    <Container component="div" maxWidth="lg" className={classes.buttonContainer}>
-                        <Button variant="contained" color="primary" disableElevation onClick={bidHandler}>BID</Button>
-                    </Container>
-                    <p id="transition-modal-description">react-transition-group animates me.</p>
+                    <h3 id="transition-modal-title">{title}</h3>
+                    {functionType === "Bid" &&
+                        <>
+                            <div className={classes.inputDiv}>
+                                <input type="number" className={classes.input} onChange={(e) => setPrice(e.target.value)} value={price} />
+                                <p>ETH</p>
+                            </div>
+                            <Container component="div" maxWidth="lg" className={classes.buttonContainer}>
+                                <Button variant="contained" color="primary" disableElevation onClick={bidHandler}>BID</Button>
+                            </Container>
+                            <p id="transition-modal-description">react-transition-group animates me.</p>
+                        </>
+                    }
+                    {functionType === "MyPage" &&
+                        <Grid container spacing={3} alignItems="center" style={{height: "100%", textAlign: "center"}}>
+                            <Grid item xs={6}>
+                                <Button variant="outlined" color="primary">
+                                    OK
+                                </Button>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Button variant="outlined" color="secondary" onClick={handleClose}>
+                                    CANCEL
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    }
                 </div>
             </Fade>
         </Modal>

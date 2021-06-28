@@ -44,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
 
 const MyPage = () => {
     const classes = useStyles();
-    const [expanded, setExpanded] = useState(false);
     const [arrayData, setArrayData] = useState([]);
     const dispatch = useDispatch();
     const { accounts } = useSelector((state) => state.artToken);
@@ -64,7 +63,9 @@ const MyPage = () => {
 
     const handleModal = () => {
         dispatch({
-            type: "SHOW_MODAL"
+            type: "SHOW_MODAL", 
+            functionType: "MyPage",
+            title: "Do you want to put up your work for auction?",
         })
     }
 
@@ -73,7 +74,7 @@ const MyPage = () => {
             <Typography align="center" component="h1" variant="h3">
                 My Page
             </Typography>
-            <Carousel>
+            <Carousel fade interval={null}>
                 {arrayData.map((d) => {
                     return (
                         <Carousel.Item className={classes.carouselItem} key={d.id}>

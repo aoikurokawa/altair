@@ -39,7 +39,9 @@ const DisplayPrice = () => {
 
     const openModal = () => {
         dispatch({
-            type: 'SHOW_MODAL'
+            type: 'SHOW_MODAL', 
+            functionType: "Bid",
+            title: "Input Price",
         })
     }
 

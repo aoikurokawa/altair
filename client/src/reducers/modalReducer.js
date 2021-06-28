@@ -1,6 +1,8 @@
 const initialState = {
     isModalVisible: false,
     functionType: "",
+    title: "",
+
 }
 
 const modalReducer = (state = initialState, action) => {
@@ -8,6 +10,7 @@ const modalReducer = (state = initialState, action) => {
         case 'SHOW_MODAL': 
             return {
                 isModalVisible: true,
+                title: action.title,
                 functionType: action.functionType,
             }
 
