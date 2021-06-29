@@ -12,7 +12,7 @@ import SignIn from './components/SignIn';
 import MyCollection from './pages/MyCollection';
 import MyPage from './pages/MyPage';
 import SpeedDials from './components/SpeedDials';
-import Progress from './components/Progress';
+import Loader from './components/Loader';
 import GlobalStyle from './components/GlobalStyle';
 import BidModal from './components/BidModal';
 import { loadBlockchain } from './actions/loadBlockchainAction';
@@ -58,7 +58,7 @@ function App() {
         </Route>
       </Switch>
       <SpeedDials />
-      <Progress isLoading={isLoading} />
+      <Loader isLoading={isLoading} />
       <BidModal isModalVisible={isModalVisible} />
     </div>
   );

@@ -2,14 +2,14 @@ const initialState = {
     isLoading: false,
 }
 
-const progressProducer = (state = initialState, action) => {
+const loaderProducer = (state = initialState, action) => {
     switch(action.type) {
-        case "SHOW_PROGRESS": 
+        case "SHOW_LOADER": 
             return {
                 isLoading: true,
             };
 
-        case "CLOSE_PROGRESS":
+        case "CLOSE_LOADER":
             return {
                 isLoading: false, 
             };
@@ -21,4 +21,4 @@ const progressProducer = (state = initialState, action) => {
     }
 }
 
-export default progressProducer;
+export default loaderProducer;

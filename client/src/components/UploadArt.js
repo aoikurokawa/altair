@@ -38,6 +38,9 @@ const UploadArt = () => {
     const { saveFile, } = useMoralisFile();
 
     const createNftHandler = async () => {
+        dispatch({
+            type: "SHOW_LOADER"
+        });
         const metadata = {
             name: name,
             accounts: accounts[0]
@@ -46,10 +49,13 @@ const UploadArt = () => {
         await saveFile(name, uploadImage, { metadata, saveIPFS: true })
             .then((result) => {
                 dispatch({
-                    type: "IPFS_UPLOAD", 
-                    ipfsHash: result._hash, 
+                    type: "IPFS_UPLOAD",
+                    ipfsHash: result._hash,
                     ipfsUrl: result._ipfs,
                     name: name,
+                });
+                dispatch({
+                    type: "CLOSE_LOADER"
                 });
             })
             .catch((error) => {
@@ -109,7 +115,7 @@ const UploadArt = () => {
             <Container className={classes.buttonContainer}>
                 <Typography component="p">
                     We will upload the your work to IPFS to create your own NFT
-                    
+
                 </Typography>
                 <Button variant="contained" color="primary" onClick={createNftHandler}>
                     UPLOAD TO IPFS
