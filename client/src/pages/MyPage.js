@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMoralisQuery } from 'react-moralis';
-import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, CardActions, Collapse, Link, makeStyles, } from '@material-ui/core';
+import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, CardActions, Collapse, Link, makeStyles, Container, } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import GavelIcon from '@material-ui/icons/Gavel';
 import { red } from '@material-ui/core/colors';
@@ -16,14 +16,21 @@ const useStyles = makeStyles((theme) => ({
     root: {
         height: '60.4rem',
         paddingTop: '1rem',
-        padding: '0rem 7rem',
     },
     loader: {
         textAlign: 'center',
         marginTop: '50%',
     },
+    container: {
+        marginTop: "5rem",
+    },
+    cardContainer: {
+        display: 'flex',
+        padding: '2rem 6rem',
+        overflow: 'hidden',
+    },
     cardRoot: {
-
+        width: '75%',
     },
     carouselItem: {
         backgroundColor: '#3F50B5',
@@ -53,27 +60,26 @@ const MyPage = () => {
     const [arrayData, setArrayData] = useState([]);
     const dispatch = useDispatch();
     const { accounts } = useSelector((state) => state.artToken);
-    const { data, error, isFetching } = useMoralisQuery("Nft", query => query.limit(3));
+    const { data, error, isFetching } = useMoralisQuery("Nft");
 
     useEffect(() => {
         const array = [];
-        data.map((d) => {
-            if (d.attributes["Account"] === accounts[0]) {
-                if (d.attributes["IpfsUrl"] !== undefined) {
-                    array.push(d);
+
+        data.map((c) => {
+            if (c.attributes["Account"] === accounts[0]) {
+                if (c.attributes["IpfsUrl"] !== undefined) {
+                    array.push(c);
                 }
             }
         });
         setArrayData(array);
     }, [data]);
 
-    console.log(data);
-
     const handleModal = () => {
         dispatch({
             type: "SHOW_MODAL",
             functionType: "MyPage",
-            title: "Do you want to put up your work for auction?",
+            title: "Do you want to put up your NFT for auction?",
         })
     }
 
@@ -88,59 +94,60 @@ const MyPage = () => {
                     ) :
                     (
                         <>
-                            <Typography align="center" component="h1" variant="h3">
+                            <Typography align="left" component="h1" variant="h3" style={{padding: "0rem 2rem"}}>
                                 My Page
                             </Typography>
-                            <Carousel fade interval={null}>
-                                {arrayData.map((d) => {
-                                    return (
-                                        <Carousel.Item className={classes.carouselItem} key={d.id}>
-                                            <Card className={classes.cardRoot}>
-                                                <CardHeader
-                                                    avatar={
-                                                        isFetching ? (
-                                                            <Skeleton animation="wave" variant="circle" width={40} height={40} />
-                                                        ) : (
-                                                            <>
-                                                                <Avatar aria-label="recipe" className={classes.avatar}>
-                                                                    {d.attributes["Account"]}
-                                                                </Avatar>
-                                                            </>
-                                                        )
-
-                                                    }
-                                                    action={
-                                                        <IconButton aria-label="settings" onClick={handleModal}>
-                                                            <GavelIcon />
-                                                        </IconButton>
-                                                    }
-                                                    title={d.attributes["Name"]}
-
-                                                />
-                                                <CardMedia
-                                                    className={classes.media}
-                                                    image={d.attributes["IpfsUrl"]}
-                                                    title="Paella dish"
-                                                />
-                                                <CardContent>
-                                                    <Typography variant="body2" color="textSecondary" component="p">
-                                                        IPFS Hash: {d.attributes["IpfsHash"]}
-                                                    </Typography>
-                                                    <Typography variant="body2" color="textSecondary" component="p">
-                                                        IPFS URL:
-                                                        <Link href={d.attributes["IpfsUrl"]} target="_blank">
-                                                            {d.attributes["IpfsUrl"]}
-                                                        </Link>
-                                                    </Typography>
-                                                    <Typography variant="body2" color="textSecondary" component="p">
-                                                        Token ID: {d.attributes["TokenId"]}
-                                                    </Typography>
-                                                </CardContent>
-                                            </Card>
-                                        </Carousel.Item>
-                                    )
-                                })}
-                            </Carousel>
+                            <div className={classes.container}>
+                                <Typography component="h1" variant="h2" align="center">Your NFT</Typography>
+                                <Typography component="p" variant="inherit" align="right" style={{paddingRight: "2rem"}}>
+                                    <Link href="#">
+                                        See more
+                                    </Link>
+                                </Typography>
+                                <div className={classes.cardContainer}>
+                                    {arrayData.map((d) => {
+                                        console.log(d.attributes["IpfsUrl"])
+                                        return (
+                                            <div>
+                                                <Card className={classes.cardRoot} >
+                                                    <CardHeader
+                                                        avatar={
+                                                            <Avatar aria-label="recipe" className={classes.avatar}>
+                                                                {d.attributes["Account"]}
+                                                            </Avatar>
+                                                        }
+                                                        action={
+                                                            <IconButton aria-label="settings" onClick={handleModal}>
+                                                                <GavelIcon />
+                                                            </IconButton>
+                                                        }
+                                                        title={d.attributes["Name"]}
+                                                    />
+                                                    <CardMedia
+                                                        className={classes.media}
+                                                        image={d.attributes["IpfsUrl"]}
+                                                        title="Paella dish"
+                                                    />
+                                                    <CardContent>
+                                                        <Typography variant="body2" color="textSecondary" component="p">
+                                                            IPFS Hash: <br />{d.attributes["IpfsHash"]}
+                                                        </Typography>
+                                                        <Typography variant="body2" color="textSecondary" component="p">
+                                                            IPFS URL: <br />
+                                                            <Link href={d.attributes["IpfsUrl"]} target="_blank">
+                                                                {d.attributes["IpfsUrl"]}
+                                                            </Link>
+                                                        </Typography>
+                                                        <Typography variant="body2" color="textSecondary" component="p">
+                                                            Token ID: {d.attributes["TokenId"]}
+                                                        </Typography>
+                                                    </CardContent>
+                                                </Card>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
                         </>
                     )
             }
