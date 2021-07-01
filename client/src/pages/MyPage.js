@@ -106,9 +106,8 @@ const MyPage = () => {
                                 </Typography>
                                 <div className={classes.cardContainer}>
                                     {arrayData.map((d) => {
-                                        console.log(d.attributes["IpfsUrl"])
                                         return (
-                                            <div>
+                                            <div key={d.attributes["TokenId"]}>
                                                 <Card className={classes.cardRoot} >
                                                     <CardHeader
                                                         avatar={

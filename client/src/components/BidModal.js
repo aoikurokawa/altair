@@ -8,6 +8,7 @@ import { Fade } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import { Container } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
+import { useMoralisQuery } from 'react-moralis'
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -47,6 +48,14 @@ const BidModal = () => {
     const { contractInstance, accounts } = useSelector((state) => state.loadBlockchain);
     const { isModalVisible, functionType, title } = useSelector((state) => state.modal);
     const dispatch = useDispatch();
+    const { data, error } = useMoralisQuery("Nft",
+            query => query, [],
+            {
+                live: true,
+                onLiveUpdate: (entity, all) => all.map(e => console.log(e)),
+            },
+        );
+    
 
     const handleClose = () => {
         dispatch({
@@ -78,55 +87,56 @@ const BidModal = () => {
         })
     }
 
-    console.log(functionType);
+    const handleAuction = (_tokenId) => {
+        
+    }
 
-
-    return (
-        <Modal
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            className={classes.modal}
-            open={isModalVisible}
-            onClose={handleClose}
-            closeAfterTransition
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-                timeout: 500,
-            }}
-        >
-            <Fade in={isModalVisible}>
-                <div className={classes.paper}>
-                    <h3 id="transition-modal-title">{title}</h3>
-                    {functionType === "Bid" &&
-                        <>
-                            <div className={classes.inputDiv}>
-                                <input type="number" className={classes.input} onChange={(e) => setPrice(e.target.value)} value={price} />
-                                <p>ETH</p>
-                            </div>
-                            <Container component="div" maxWidth="lg" className={classes.buttonContainer}>
-                                <Button variant="contained" color="primary" disableElevation onClick={bidHandler}>BID</Button>
-                            </Container>
-                            <p id="transition-modal-description">react-transition-group animates me.</p>
-                        </>
-                    }
-                    {functionType === "MyPage" &&
-                        <Grid container spacing={3} alignItems="center" style={{height: "100%", textAlign: "center"}}>
-                            <Grid item xs={6}>
-                                <Button variant="outlined" color="primary">
-                                    OK
-                                </Button>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Button variant="outlined" color="secondary" onClick={handleClose}>
-                                    CANCEL
-                                </Button>
-                            </Grid>
+return (
+    <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        className={classes.modal}
+        open={isModalVisible}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+            timeout: 500,
+        }}
+    >
+        <Fade in={isModalVisible}>
+            <div className={classes.paper}>
+                <h3 id="transition-modal-title">{title}</h3>
+                {functionType === "Bid" &&
+                    <>
+                        <div className={classes.inputDiv}>
+                            <input type="number" className={classes.input} onChange={(e) => setPrice(e.target.value)} value={price} />
+                            <p>ETH</p>
+                        </div>
+                        <Container component="div" maxWidth="lg" className={classes.buttonContainer}>
+                            <Button variant="contained" color="primary" disableElevation onClick={bidHandler}>BID</Button>
+                        </Container>
+                        <p id="transition-modal-description">react-transition-group animates me.</p>
+                    </>
+                }
+                {functionType === "MyPage" &&
+                    <Grid container spacing={3} alignItems="center" style={{ height: "100%", textAlign: "center" }}>
+                        <Grid item xs={6}>
+                            <Button variant="outlined" color="primary" onClick={handleAuction}>
+                                OK
+                            </Button>
                         </Grid>
-                    }
-                </div>
-            </Fade>
-        </Modal>
-    );
+                        <Grid item xs={6}>
+                            <Button variant="outlined" color="secondary" onClick={handleClose}>
+                                CANCEL
+                            </Button>
+                        </Grid>
+                    </Grid>
+                }
+            </div>
+        </Fade>
+    </Modal>
+);
 }
 
 export default BidModal;
