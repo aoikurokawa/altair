@@ -2,7 +2,7 @@ const initialState = {
     isModalVisible: false,
     functionType: "",
     title: "",
-
+    objectId: "",
 }
 
 const modalReducer = (state = initialState, action) => {
@@ -12,12 +12,15 @@ const modalReducer = (state = initialState, action) => {
                 isModalVisible: true,
                 title: action.title,
                 functionType: action.functionType,
+                objectId: action.objectId,
             }
 
         case 'CLOSE_MODAL':
             return {
                 isModalVisible: false, 
-                functionType: action.functionType,
+                title: "", 
+                functionType: "",
+                objectId: "",
             }
 
         default: 

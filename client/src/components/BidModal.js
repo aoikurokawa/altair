@@ -8,7 +8,8 @@ import { Fade } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import { Container } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
-import { useMoralisQuery } from 'react-moralis'
+
+import { updateIsSell } from '../actions/artTokenAction';
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -46,15 +47,8 @@ const BidModal = () => {
     const [price, setPrice] = useState(0);
     const classes = useStyles();
     const { contractInstance, accounts } = useSelector((state) => state.loadBlockchain);
-    const { isModalVisible, functionType, title } = useSelector((state) => state.modal);
+    const { isModalVisible, functionType, title, objectId } = useSelector((state) => state.modal);
     const dispatch = useDispatch();
-    const { data, error } = useMoralisQuery("Nft",
-            query => query, [],
-            {
-                live: true,
-                onLiveUpdate: (entity, all) => all.map(e => console.log(e)),
-            },
-        );
     
 
     const handleClose = () => {
@@ -87,8 +81,8 @@ const BidModal = () => {
         })
     }
 
-    const handleAuction = (_tokenId) => {
-        
+    const handleAuction = () => {
+        dispatch(updateIsSell(objectId));
     }
 
 return (

@@ -42,9 +42,28 @@ export const mint = (hash, url, name) => async (dispatch) => {
             nft.save();
 
             dispatch({
-                type: "IPFS_CLEAR", 
+                type: "IPFS_CLEAR",
             })
         });
+}
+
+export const updateIsSell = (objectId) => async (dispatch) => {
+    console.log(objectId);
+    const Nft = new Moralis.Object.extend("Nft");
+    const query = new Moralis.Query(Nft);
+    query.get(objectId)
+        .then((result) => {
+            result.set("IsSelled", true);
+            result.save();
+        }, (error) => {
+            console.log("Error occured", error);
+        })
+
+    dispatch({
+        type: "CLOSE_MODAL",
+        title: "", 
+        functionType: "",
+    });
 }
 
 export const getToken = (tokenId) => async (dispatch) => {

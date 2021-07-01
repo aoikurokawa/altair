@@ -75,12 +75,13 @@ const MyPage = () => {
         setArrayData(array);
     }, [data]);
 
-    const handleModal = () => {
+    const handleModal = (objectId) => {
         dispatch({
             type: "SHOW_MODAL",
             functionType: "MyPage",
             title: "Do you want to put up your NFT for auction?",
-        })
+            objectId: objectId,
+        });
     }
 
     return (
@@ -94,12 +95,12 @@ const MyPage = () => {
                     ) :
                     (
                         <>
-                            <Typography align="left" component="h1" variant="h3" style={{padding: "0rem 2rem"}}>
+                            <Typography align="left" component="h1" variant="h3" style={{ padding: "0rem 2rem" }}>
                                 My Page
                             </Typography>
                             <div className={classes.container}>
                                 <Typography component="h1" variant="h2" align="center">Your NFT</Typography>
-                                <Typography component="p" variant="inherit" align="right" style={{paddingRight: "2rem"}}>
+                                <Typography component="p" variant="inherit" align="right" style={{ paddingRight: "2rem" }}>
                                     <Link href="#">
                                         See more
                                     </Link>
@@ -116,7 +117,7 @@ const MyPage = () => {
                                                             </Avatar>
                                                         }
                                                         action={
-                                                            <IconButton aria-label="settings" onClick={handleModal}>
+                                                            <IconButton aria-label="settings" onClick={() => handleModal(d.id)}>
                                                                 <GavelIcon />
                                                             </IconButton>
                                                         }
@@ -140,6 +141,15 @@ const MyPage = () => {
                                                         <Typography variant="body2" color="textSecondary" component="p">
                                                             Token ID: {d.attributes["TokenId"]}
                                                         </Typography>
+                                                        {
+                                                            d.attributes["IsSelled"] ?
+                                                                <Typography variant="body2" color="textSecondary" component="p">
+                                                                    Sale
+                                                                </Typography> :
+                                                                <Typography variant="body2" color="textSecondary" component="p">
+                                                                    Not Sale
+                                                                </Typography>
+                                                        }
                                                     </CardContent>
                                                 </Card>
                                             </div>
