@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMoralisQuery } from 'react-moralis';
-import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, CardActions, Collapse, Link, makeStyles, Container, } from '@material-ui/core';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, Link, makeStyles,  } from '@material-ui/core';
 import GavelIcon from '@material-ui/icons/Gavel';
 import { red } from '@material-ui/core/colors';
-import Skeleton from '@material-ui/lab/Skeleton';
-import clsx from 'clsx';
-import { Carousel } from 'react-bootstrap';
-import { getToken } from '../actions/artTokenAction';
-import { CircularProgress } from '@material-ui/core';
 import { PulseLoader } from 'react-spinners';
 
 const useStyles = makeStyles((theme) => ({
