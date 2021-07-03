@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
-import { Typography, Card, CardHeader, Avatar, CardMedia, CardContent, Link, IconButton ,makeStyles } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux'
+import { Typography, Card, CardHeader, Avatar, CardMedia, CardContent, Link, IconButton, makeStyles } from '@material-ui/core';
 import { red } from '@material-ui/core/colors';
 import GavelIcon from '@material-ui/icons/Gavel';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useMoralisQuery } from 'react-moralis';
-
-import AuctionDetail from '../components/AuctionDetail';
-import Carousel from '../components/Carouselmage';
-import DisplayPrice from '../components/DisplayPrice';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -53,6 +52,8 @@ const useStyles = makeStyles((theme) => ({
 
 const Auction = () => {
     const classes = useStyles();
+    const dispatch = useDispatch();
+    const history = useHistory();
 
     const { data, error, isFetching } = useMoralisQuery(
         "Nft",
@@ -62,66 +63,70 @@ const Auction = () => {
 
     );
 
-    console.log(data);
+    const auctionDetailHandler = (auctionDetail) => {
+        dispatch({
+            type: "MOVE_AUCTIONDETAIL",
+            nftDetail: auctionDetail,
+        });
+        history.push("./auctionDetail");
+    };
+
     return (
         <div style={{ height: '60.4rem' }}>
             <Typography component="h1" variant="h3" gutterBottom style={{ padding: '5px' }}>
                 Welcome to Auction
             </Typography>
-            {data.map((d) => {
-                return (
-                    <div key={d.attributes["TokenId"]}>
-                        <Card className={classes.cardRoot} >
-                            <CardHeader
-                                avatar={
-                                    <Avatar aria-label="recipe" className={classes.avatar}>
-                                        {d.attributes["Account"]}
-                                    </Avatar>
-                                }
-                                action={
-                                    <IconButton aria-label="settings">
-                                        <GavelIcon />
-                                    </IconButton>
-                                }
-                                title={d.attributes["Name"]}
-                            />
-                            <CardMedia
-                                className={classes.media}
-                                image={d.attributes["IpfsUrl"]}
-                                title="Paella dish"
-                            />
-                            <CardContent>
-                                <Typography variant="body2" color="textSecondary" component="p">
-                                    IPFS Hash: <br />{d.attributes["IpfsHash"]}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary" component="p">
-                                    IPFS URL: <br />
-                                    <Link href={d.attributes["IpfsUrl"]} target="_blank">
-                                        {d.attributes["IpfsUrl"]}
-                                    </Link>
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary" component="p">
-                                    Token ID: {d.attributes["TokenId"]}
-                                </Typography>
-                                {
-                                    d.attributes["IsSelled"] ?
-                                        <Typography variant="body2" color="textSecondary" component="p">
-                                            Sale
-                                        </Typography> :
-                                        <Typography variant="body2" color="textSecondary" component="p">
-                                            Not Sale
-                                        </Typography>
-                                }
-                            </CardContent>
-                        </Card>
-                    </div>
-                )
-            })}
-            <div style={{ display: 'flex' }}>
-                <Carousel />
-                <DisplayPrice />
+            <div className={classes.cardContainer}>
+                {data.map((d) => {
+                    return (
+                        <div key={d.attributes["TokenId"]}>
+                            <Card className={classes.cardRoot} >
+                                <CardHeader
+                                    avatar={
+                                        <Avatar aria-label="recipe" className={classes.avatar}>
+                                            {d.attributes["Account"]}
+                                        </Avatar>
+                                    }
+                                    action={
+                                        <IconButton aria-label="settings" onClick={() => auctionDetailHandler(d)}>
+                                            <MoreVertIcon />
+                                        </IconButton>
+                                    }
+                                    title={d.attributes["Name"]}
+                                />
+                                <CardMedia
+                                    className={classes.media}
+                                    image={d.attributes["IpfsUrl"]}
+                                    title="Paella dish"
+                                />
+                                <CardContent>
+                                    <Typography variant="body2" color="textSecondary" component="p">
+                                        IPFS Hash: <br />{d.attributes["IpfsHash"]}
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary" component="p">
+                                        IPFS URL: <br />
+                                        <Link href={d.attributes["IpfsUrl"]} target="_blank">
+                                            {d.attributes["IpfsUrl"]}
+                                        </Link>
+                                    </Typography>
+                                    <Typography variant="body2" color="textSecondary" component="p">
+                                        Token ID: {d.attributes["TokenId"]}
+                                    </Typography>
+                                    {
+                                        d.attributes["IsSelled"] ?
+                                            <Typography variant="body2" color="textSecondary" component="p">
+                                                Sale
+                                            </Typography> :
+                                            <Typography variant="body2" color="textSecondary" component="p">
+                                                Not Sale
+                                            </Typography>
+                                    }
+                                </CardContent>
+                            </Card>
+                        </div>
+                    )
+                })}
             </div>
-            <AuctionDetail />
         </div>
     );
 }

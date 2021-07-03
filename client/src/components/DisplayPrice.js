@@ -33,10 +33,6 @@ const DisplayPrice = () => {
     const dispatch = useDispatch();
     const { highestBid, auctionTimeEnd, contractInstance } = useSelector((state) => state.loadBlockchain);
 
-    useEffect(() =>  {
-        console.log(contractInstance);
-    }, [])
-
     const openModal = () => {
         dispatch({
             type: 'SHOW_MODAL', 
