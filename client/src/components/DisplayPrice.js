@@ -10,21 +10,29 @@ import { Button } from '@material-ui/core';
 
 const useStyles = makeStyles({
     cardRoot: {
-        color: 'white',
-        background: 'black',
+        background: 'rgb(229, 232, 235)',
         marginBottom: '10px',
 
     },
     title: {
         fontSize: 14,
     },
+    date: {
+        fontSize: 30, 
+        fontFamily: 'bold', 
+        paddingLeft: 5,
+    },
+    price: {
+        fontSize: 30,
+        fontFamily: 'bold',
+        paddingLeft: 5,
+    },
     buttonContainer: {
         textAlign: 'center',
         padding: '10px',
     },
     button: {
-        width: '50%',
-        padding: '10px',
+        width: '100%'
     }
 })
 
@@ -35,7 +43,7 @@ const DisplayPrice = () => {
 
     const openModal = () => {
         dispatch({
-            type: 'SHOW_MODAL', 
+            type: 'SHOW_MODAL',
             functionType: "Bid",
             title: "Input Price",
         })
@@ -62,26 +70,25 @@ const DisplayPrice = () => {
     }
 
     return (
-        <div style={{ width: '30%', padding: '5px' }}>
+        <div style={{ width: '40%', padding: '5px' }}>
             <Container maxWidth="lg" component="div">
                 <Card className={classes.cardRoot}>
                     <CardContent>
-                        {/* <Typography variant="h3" component="p" className={classes.title}>Total: </Typography> */}
-                        <Typography variant="h3" component="p" className={classes.title}>End time: {auctionTimeEnd}</Typography>
+                        <Typography variant="h3" component="p" className={classes.title}>End time</Typography>
+                        <Typography variant="h1" component="p" className={classes.date}>{auctionTimeEnd}</Typography>
                     </CardContent>
                 </Card>
             </Container>
             <Container maxWidth="lg" component="div">
                 <Card className={classes.cardRoot}>
                     <CardContent>
-                        <Typography variant="h3" component="p" className={classes.title}>Price: </Typography>
-                        <Typography variant="h3" component="p" className={classes.title}>{highestBid} ETH</Typography>
+                        <Typography variant="h3" component="p" className={classes.title}>Current price</Typography>
+                        <Typography variant="h1" component="p" className={classes.price}>{highestBid} ETH</Typography>
+                        <Button variant="contained" size="large" color="primary" className={classes.button} onClick={openModal}>BID</Button>
                     </CardContent>
                 </Card>
             </Container>
-            <Container maxWidth="lg" component="div" className={classes.buttonContainer}>
-                <Button variant="contained" size="large" color="primary" className={classes.button} onClick={openModal}>BID</Button>
-            </Container>
+
             <Container maxWidth="lg" component="div" className={classes.buttonContainer}>
                 <Button variant="contained" size="large" color="primary" className={classes.button} onClick={widthdrawHandler}>WITHDRAW</Button>
             </Container>

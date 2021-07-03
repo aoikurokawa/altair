@@ -12,7 +12,7 @@ const AuctionDetail = () => {
     // }, []);
 
     return (
-        <div style={{ height: '60.4rem' }}>
+        <div style={{ height: '60.4rem', padding: '1rem 5rem' }}>
             <div style={{ display: 'flex' }}>
                 <Carousel />
                 <DisplayPrice />

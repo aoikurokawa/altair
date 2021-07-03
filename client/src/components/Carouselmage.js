@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Carousel } from 'react-bootstrap';
-import { makeStyles, Card, CardHeader, Avatar, CardMedia, CardContent, Typography, Link  } from '@material-ui/core';
+import { makeStyles, Card, CardHeader, Avatar, CardMedia, CardContent, Typography, Link, CardActionArea } from '@material-ui/core';
 import { red } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme) => ({
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
         padding: '88px 140px',
     },
     media: {
-        height: 0,
+        height: 600,
         paddingTop: '56.25%', // 16:9
     },
     expand: {
@@ -49,22 +49,24 @@ const CarouselImage = () => {
     const classes = useStyles();
 
     return (
-        <div style={{ width: '70%', padding: '5px' }}>
+        <div style={{ width: '60%', padding: '5px' }}>
             <div>
                 <Card>
-                    <CardHeader
-                        avatar={
-                            <Avatar aria-label="recipe" className={classes.avatar}>
-                                {nftDetail.attributes["Account"]}
-                            </Avatar>
-                        }
-                        title={nftDetail.attributes["Name"]}
-                    />
-                    <CardMedia
-                        className={classes.media}
-                        image={nftDetail.attributes["IpfsUrl"]}
-                        title="Paella dish"
-                    />
+                    <CardActionArea>
+                        <CardHeader
+                            avatar={
+                                <Avatar aria-label="recipe" className={classes.avatar}>
+                                    {nftDetail.attributes["Account"]}
+                                </Avatar>
+                            }
+                            title={nftDetail.attributes["Name"]}
+                        />
+                        <CardMedia
+                            className={classes.media}
+                            image={nftDetail.attributes["IpfsUrl"]}
+                            title="Paella dish"
+                        />
+                    </CardActionArea>
                 </Card>
             </div>
         </div>
