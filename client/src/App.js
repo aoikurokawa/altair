@@ -16,7 +16,7 @@ import SpeedDials from './components/SpeedDials';
 import Loader from './components/Loader';
 import GlobalStyle from './components/GlobalStyle';
 import BidModal from './components/BidModal';
-import { loadBlockchain } from './actions/loadBlockchainAction';
+import { auctionContractHandler } from './actions/loadBlockchainAction';
 import { getArtTokenContract } from './actions/artTokenAction';
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
   const { isAuthenticated } = useMoralis();
 
   useEffect(() => {
-    dispatch(loadBlockchain());
+    dispatch(auctionContractHandler());
     dispatch(getArtTokenContract());
   }, []);
 
