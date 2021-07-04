@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMoralisQuery } from 'react-moralis';
 import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, Link, makeStyles, CardActionArea } from '@material-ui/core';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import GavelIcon from '@material-ui/icons/Gavel';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { red } from '@material-ui/core/colors';
 import { PulseLoader } from 'react-spinners';
 
@@ -51,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
 
 const MyPage = () => {
     const classes = useStyles();
+    const history = useHistory();
     const [arrayData, setArrayData] = useState([]);
     const dispatch = useDispatch();
     const { accounts } = useSelector((state) => state.artToken);
@@ -79,6 +82,14 @@ const MyPage = () => {
         });
     }
 
+    const auctionDetailHandler = (auctionDetail) => {
+        dispatch({
+            type: "MOVE_AUCTIONDETAIL",
+            nftDetail: auctionDetail,
+        });
+        history.push("./auctionDetail");
+    };
+
     return (
         <div className={classes.root}>
             {
@@ -106,19 +117,29 @@ const MyPage = () => {
                                             <div key={d.attributes["TokenId"]} className={classes.cardRoot}>
                                                 <Card>
                                                     <CardActionArea>
-                                                        <CardHeader
-                                                            avatar={
-                                                                <Avatar aria-label="recipe" className={classes.avatar}>
-                                                                    {d.attributes["Account"]}
-                                                                </Avatar>
-                                                            }
-                                                            action={
-                                                                <IconButton aria-label="settings" onClick={() => handleModal(d.id, d.attributes["TokenId"])}>
-                                                                    <MoreVertIcon />
+                                                        {d.attributes["IsSelled"] ?
+                                                            <div style={{ display: 'flex', justifyContent: "space-between", padding: "0 1rem" }}>
+                                                                <Typography component="h1" variant="h4" style={{ textAlign: "center" }}>Now Auction</Typography>
+                                                                <IconButton aria-label="settings" onClick={() => auctionDetailHandler(d)}>
+                                                                    <OpenInNewIcon />
                                                                 </IconButton>
-                                                            }
-                                                            title={d.attributes["Name"]}
-                                                        />
+                                                            </div>
+                                                            :
+                                                            <CardHeader
+                                                                avatar={
+                                                                    <Avatar aria-label="recipe" className={classes.avatar}>
+                                                                        {d.attributes["Account"]}
+                                                                    </Avatar>
+                                                                }
+                                                                action={
+                                                                    <IconButton aria-label="settings" onClick={() => handleModal(d.id, d.attributes["TokenId"])}>
+                                                                        <GavelIcon />
+                                                                    </IconButton>
+                                                                }
+                                                                title={d.attributes["Name"]}
+                                                            />
+                                                        }
+
                                                         <CardMedia
                                                             className={classes.media}
                                                             image={d.attributes["IpfsUrl"]}
