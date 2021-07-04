@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import SpeedDial from '@material-ui/lab/SpeedDial';
@@ -50,9 +50,9 @@ const actions = [
 const SpeedDials = () => {
   let history = useHistory();
   const classes = useStyles();
-  const [direction, setDirection] = React.useState('up');
-  const [open, setOpen] = React.useState(false);
-  const [hidden, setHidden] = React.useState(false);
+  const [direction, setDirection] = useState('up');
+  const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const { isAuthenticated } = useMoralis();
 
   const handleClose = () => {

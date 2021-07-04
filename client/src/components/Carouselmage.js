@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { Carousel } from 'react-bootstrap';
-import { makeStyles, Card, CardHeader, Avatar, CardMedia, CardContent, Typography, Link, CardActionArea } from '@material-ui/core';
+import { makeStyles, Card, CardHeader, Avatar, CardMedia, CardActionArea } from '@material-ui/core';
 import { red } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme) => ({

@@ -5,13 +5,9 @@ import { AppBar, Menu, MenuItem } from '@material-ui/core';
 import { Toolbar } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 import { Button } from '@material-ui/core';
-import { Alert, AlertTitle } from '@material-ui/lab';
 import { useMoralis } from 'react-moralis'
 import { IconButton } from '@material-ui/core';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-
-
-import styled from 'styled-components';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -34,10 +30,9 @@ const Nav = () => {
     const classes = useStyles();
     const histry = useHistory();
     const menuId = 'primary-search-account-menu';
-    const [auth, setAuth] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
-    const { authenticate, isAuthenticated, authError, logout } = useMoralis();
+    const { authenticate, isAuthenticated, logout } = useMoralis();
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -122,13 +117,5 @@ const Nav = () => {
         </div>
     )
 }
-
-const NavStyled = styled.nav`
-    
-`;
-
-const EthStyled = styled.div`
-
-`;
 
 export default Nav;

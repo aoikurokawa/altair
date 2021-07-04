@@ -6,7 +6,6 @@ const Moralis = require('moralis');
 export const getArtTokenContract = () => async (dispatch) => {
     const web3 = new Web3(Web3.givenProvider || "http:localhost:8545");
     const accounts = await web3.eth.getAccounts();
-    const selectedAccounts = window.ethereum.selectedAddress;
     const contractInstance = new web3.eth.Contract(ARTTOKENABI, ARTTOKENADDRESS, { from: accounts[0] });
 
     dispatch({
@@ -19,7 +18,6 @@ export const getArtTokenContract = () => async (dispatch) => {
 export const mint = (hash, url, name) => async (dispatch) => {
     const web3 = new Web3(Web3.givenProvider || "http:localhost:8545");
     const accounts = await web3.eth.getAccounts();
-    const selectedAccounts = window.ethereum.selectedAddress;
     const contractInstance = new web3.eth.Contract(ARTTOKENABI, ARTTOKENADDRESS, { from: accounts[0] });
 
     console.log(name);
@@ -68,7 +66,6 @@ export const updateIsSell = (objectId) => async (dispatch) => {
 export const getToken = (tokenId) => async (dispatch) => {
     const web3 = new Web3(Web3.givenProvider || "http:localhost:8545");
     const accounts = await web3.eth.getAccounts();
-    const selectedAccounts = window.ethereum.selectedAddress;
     const contractInstance = new web3.eth.Contract(ARTTOKENABI, ARTTOKENADDRESS, { from: accounts[0] });
 
     contractInstance.methods

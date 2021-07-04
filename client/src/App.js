@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Switch, Route, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import { useMoralis } from 'react-moralis';
 
 import Nav from './components/Nav';
 import Home from './pages/Home';
@@ -24,10 +23,8 @@ function App() {
   const dispatch = useDispatch();
   const { isModalVisible } = useSelector((state) => state.modal);
   const { isLoading } = useSelector((state) => state.progress);
-  const { isAuthenticated } = useMoralis();
 
   useEffect(() => {
-    
     dispatch(getArtTokenContract());
   }, []);
 

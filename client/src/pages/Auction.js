@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, } from 'react-redux'
 import { Typography, Card, CardHeader, Avatar, CardMedia, CardContent, Link, IconButton, makeStyles } from '@material-ui/core';
 import { red } from '@material-ui/core/colors';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -54,7 +54,7 @@ const Auction = () => {
     const dispatch = useDispatch();
     const history = useHistory();
 
-    const { data, error, isFetching } = useMoralisQuery(
+    const { data, } = useMoralisQuery(
         "Nft",
         query =>
             query.equalTo("IsSelled", true),

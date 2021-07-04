@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Grid, Button, Container, Typography, TextField, } from '@material-ui/core';
+import { Button, Container, Typography, TextField, } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMoralis, useMoralisFile, useMoralisQuery } from 'react-moralis';
+import { useMoralisFile, } from 'react-moralis';
 
 const useStyles = makeStyles({
     inputContainer: {

@@ -41,7 +41,7 @@ const useStyles = makeStyles({
 const DisplayPrice = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const { highestBid, auctionTimeEnd, contractInstance } = useSelector((state) => state.loadBlockchain);
+    const { highestBid, auctionTimeEnd } = useSelector((state) => state.loadBlockchain);
     const { nftDetail } = useSelector((state) => state.artToken);
 
     useEffect(() => {
