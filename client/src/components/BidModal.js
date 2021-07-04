@@ -1,15 +1,15 @@
+import 'date-fns';
 import React, { useState } from 'react';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+    MuiPickersUtilsProvider,
+    KeyboardTimePicker,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
 import { useDispatch, useSelector } from 'react-redux';
-import { makeStyles } from '@material-ui/core';
-import { Modal } from '@material-ui/core';
-import { Backdrop } from '@material-ui/core';
-import { Fade } from '@material-ui/core';
-import { Button } from '@material-ui/core';
-import { Container } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
+import { makeStyles, Modal, Backdrop, Fade, Button, Container, Grid, TextField } from '@material-ui/core';
 
-import { updateIsSell } from '../actions/artTokenAction';
-import { bidHandlerAction } from '../actions/loadBlockchainAction';
+import { bidHandlerAction, auctionStartAction } from '../actions/loadBlockchainAction';
 
 const useStyles = makeStyles((theme) => ({
     modal: {
@@ -45,11 +45,15 @@ const useStyles = makeStyles((theme) => ({
 
 const BidModal = () => {
     const [price, setPrice] = useState(0);
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const classes = useStyles();
-    const { isModalVisible, functionType, title, objectId } = useSelector((state) => state.modal);
+    const { isModalVisible, functionType, title, objectId, tokenId } = useSelector((state) => state.modal);
     const { nftDetail } = useSelector((state) => state.artToken);
     const dispatch = useDispatch();
 
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+    };
 
     const handleClose = () => {
         dispatch({
@@ -65,7 +69,7 @@ const BidModal = () => {
     }
 
     const handleAuction = () => {
-        dispatch(updateIsSell(objectId));
+        dispatch(auctionStartAction(tokenId, selectedDate, objectId));
     }
 
     return (
@@ -98,6 +102,27 @@ const BidModal = () => {
                     }
                     {functionType === "MyPage" &&
                         <Grid container spacing={3} alignItems="center" style={{ height: "100%", textAlign: "center" }}>
+                            <form noValidate autoComplete="off" style={{ display: "flex", alignItems: 'center', padding: '2rem' }}>
+                                <Container maxWidth="lg" style={{ width: '50%' }}>
+                                    <TextField id="outlined-basic" label="Token ID" variant="outlined" name="Token ID" value={tokenId} fullWidth />
+                                </Container>
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <KeyboardDatePicker
+                                        disableToolbar
+                                        variant="inline"
+                                        format="MM/dd/yyyy"
+                                        margin="normal"
+                                        id="date-picker-inline"
+                                        label="Auction Time End"
+                                        value={selectedDate}
+                                        onChange={handleDateChange}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                        style={{ width: "50%", margin: '0' }}
+                                    />
+                                </MuiPickersUtilsProvider>
+                            </form>
                             <Grid item xs={6}>
                                 <Button variant="outlined" color="primary" onClick={handleAuction}>
                                     OK

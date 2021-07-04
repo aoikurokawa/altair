@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMoralisQuery } from 'react-moralis';
-import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, Link, makeStyles,  } from '@material-ui/core';
+import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, Link, makeStyles, } from '@material-ui/core';
 import GavelIcon from '@material-ui/icons/Gavel';
 import { red } from '@material-ui/core/colors';
 import { PulseLoader } from 'react-spinners';
@@ -69,12 +69,13 @@ const MyPage = () => {
         setArrayData(array);
     }, [data]);
 
-    const handleModal = (objectId) => {
+    const handleModal = (objectId, tokenId) => {
         dispatch({
             type: "SHOW_MODAL",
             functionType: "MyPage",
             title: "Do you want to put up your NFT for auction?",
             objectId: objectId,
+            tokenId: tokenId,
         });
     }
 
@@ -111,7 +112,7 @@ const MyPage = () => {
                                                             </Avatar>
                                                         }
                                                         action={
-                                                            <IconButton aria-label="settings" onClick={() => handleModal(d.id)}>
+                                                            <IconButton aria-label="settings" onClick={() => handleModal(d.id, d.attributes["TokenId"])}>
                                                                 <GavelIcon />
                                                             </IconButton>
                                                         }

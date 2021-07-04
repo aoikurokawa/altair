@@ -48,7 +48,6 @@ export const mint = (hash, url, name) => async (dispatch) => {
 }
 
 export const updateIsSell = (objectId) => async (dispatch) => {
-    console.log(objectId);
     const Nft = new Moralis.Object.extend("Nft");
     const query = new Moralis.Query(Nft);
     query.get(objectId)

@@ -1,6 +1,8 @@
 import Web3 from 'web3';
 import { AUCTIONADDRESS, AUCTIONABI } from '../auctionConfig';
 
+const Moralis = require('moralis');
+
 const loadBlockchain = async () => {
     const web3 = new Web3(Web3.givenProvider || "http:localhost:8545");
     const accounts = await web3.eth.getAccounts();
@@ -20,7 +22,7 @@ export const auctionContractHandler = (_tokenId) => async (dispatch) => {
         contractInstance: contractInstance,
         accounts: accounts,
     });
-    
+
     contractInstance.methods
         .getHighestBid(_tokenId)
         .call()
@@ -35,12 +37,50 @@ export const auctionContractHandler = (_tokenId) => async (dispatch) => {
         .getAuctionTimeEnd(_tokenId)
         .call()
         .then((res) => {
+            if (res < 10000000000)
+                res *= 1000; // convert to milliseconds (Epoch is usually expressed in seconds, but Javascript uses Milliseconds)
+            let epoch = res + (new Date().getTimezoneOffset() * -1); //for timeZone        
+            const date = new Date(epoch);
             dispatch({
                 type: "GET_AUCTIONTIMEEND",
-                auctionTimeEnd: res,
+                auctionTimeEnd: date.toLocaleDateString(),
             });
         });
 };
+
+export const auctionStartAction = (_tokenId, _auctionTimeEnd, _objectId) => async (dispatch) => {
+    const { contractInstance, accounts } = await loadBlockchain();
+
+    const date = Math.round(new Date(_auctionTimeEnd).getTime() / 1000.0);
+    console.log(date);
+
+    let config = {
+        from: accounts[0],
+    };
+    console.log(contractInstance);
+    contractInstance.methods
+        .auctionStart(_tokenId, date)
+        .send(config)
+        .on("receipt", (res) => {
+            console.log(res);
+        });
+
+    const Nft = new Moralis.Object.extend("Nft");
+    const query = new Moralis.Query(Nft);
+    query.get(_objectId)
+        .then((result) => {
+            result.set("IsSelled", true);
+            result.save();
+        }, (error) => {
+            console.log("Error occured", error);
+        })
+
+    dispatch({
+        type: "CLOSE_MODAL",
+        title: "",
+        functionType: "",
+    });
+}
 
 export const bidHandlerAction = (_tokenId, _price) => async (dispatch) => {
     const { contractInstance, accounts } = await loadBlockchain();

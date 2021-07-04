@@ -3,6 +3,7 @@ const initialState = {
     functionType: "",
     title: "",
     objectId: "",
+    tokenId: "",
 }
 
 const modalReducer = (state = initialState, action) => {
@@ -13,6 +14,7 @@ const modalReducer = (state = initialState, action) => {
                 title: action.title,
                 functionType: action.functionType,
                 objectId: action.objectId,
+                tokenId: action.tokenId,
             }
 
         case 'CLOSE_MODAL':
@@ -21,6 +23,7 @@ const modalReducer = (state = initialState, action) => {
                 title: "", 
                 functionType: "",
                 objectId: "",
+                tokenId: "",
             }
 
         default: 
