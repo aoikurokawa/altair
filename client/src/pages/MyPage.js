@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMoralisQuery } from 'react-moralis';
-import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, Link, makeStyles, CardActionArea } from '@material-ui/core';
+import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, Link, makeStyles, CardActionArea, Container, Button } from '@material-ui/core';
 import GavelIcon from '@material-ui/icons/Gavel';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { red } from '@material-ui/core/colors';
@@ -116,59 +116,48 @@ const MyPage = () => {
                                         return (
                                             <div key={d.attributes["TokenId"]} className={classes.cardRoot}>
                                                 <Card>
-                                                    <CardActionArea>
-                                                        {d.attributes["IsSelled"] ?
-                                                            <div style={{ display: 'flex', justifyContent: "space-between", padding: "0 1rem" }}>
-                                                                <Typography component="h1" variant="h4" style={{ textAlign: "center" }}>Now Auction</Typography>
-                                                                <IconButton aria-label="settings" onClick={() => auctionDetailHandler(d)}>
-                                                                    <OpenInNewIcon />
-                                                                </IconButton>
-                                                            </div>
-                                                            :
-                                                            <CardHeader
-                                                                avatar={
-                                                                    <Avatar aria-label="recipe" className={classes.avatar}>
-                                                                        {d.attributes["Account"]}
-                                                                    </Avatar>
-                                                                }
-                                                                action={
-                                                                    <IconButton aria-label="settings" onClick={() => handleModal(d.id, d.attributes["TokenId"])}>
-                                                                        <GavelIcon />
-                                                                    </IconButton>
-                                                                }
-                                                                title={d.attributes["Name"]}
-                                                            />
-                                                        }
 
-                                                        <CardMedia
-                                                            className={classes.media}
-                                                            image={d.attributes["IpfsUrl"]}
-                                                            title="Paella dish"
-                                                        />
-                                                        <CardContent>
-                                                            <Typography variant="body2" color="textSecondary" component="p">
-                                                                IPFS Hash: <br />{d.attributes["IpfsHash"]}
-                                                            </Typography>
-                                                            <Typography variant="body2" color="textSecondary" component="p">
-                                                                IPFS URL: <br />
-                                                                <Link href={d.attributes["IpfsUrl"]} target="_blank">
-                                                                    {d.attributes["IpfsUrl"]}
-                                                                </Link>
-                                                            </Typography>
-                                                            <Typography variant="body2" color="textSecondary" component="p">
-                                                                Token ID: {d.attributes["TokenId"]}
-                                                            </Typography>
-                                                            {
-                                                                d.attributes["IsSelled"] ?
-                                                                    <Typography variant="body2" color="textSecondary" component="p">
-                                                                        Sale
-                                                                    </Typography> :
-                                                                    <Typography variant="body2" color="textSecondary" component="p">
-                                                                        Not Sale
-                                                                    </Typography>
+                                                    {d.attributes["IsSelled"] ?
+                                                        <div style={{ display: 'flex', justifyContent: "space-between", padding: "0 1rem" }}>
+                                                            <Typography component="span" variant="h4">Now Auction</Typography>
+                                                            <IconButton aria-label="settings" onClick={() => auctionDetailHandler(d)}>
+                                                                <OpenInNewIcon />
+                                                            </IconButton>
+                                                        </div>
+                                                        :
+                                                        <CardHeader
+                                                            avatar={
+                                                                <Avatar aria-label="recipe" className={classes.avatar}>
+                                                                    {d.attributes["Account"]}
+                                                                </Avatar>
                                                             }
-                                                        </CardContent>
-                                                    </CardActionArea>
+                                                            action={
+                                                                <IconButton aria-label="settings" onClick={() => handleModal(d.id)}>
+                                                                    <GavelIcon />
+                                                                </IconButton>
+                                                            }
+                                                            title={d.attributes["Name"]}
+                                                        />
+                                                    }
+                                                    <CardMedia
+                                                        className={classes.media}
+                                                        image={d.attributes["IpfsUrl"]}
+                                                        title="Paella dish"
+                                                    />
+                                                    <CardContent>
+                                                        <Typography variant="body2" color="textSecondary" component="p">
+                                                            IPFS Hash: <br />{d.attributes["IpfsHash"]}
+                                                        </Typography>
+                                                        <Typography variant="body2" color="textSecondary" component="p">
+                                                            IPFS URL: <br />
+                                                            <Link href={d.attributes["IpfsUrl"]} target="_blank">
+                                                                {d.attributes["IpfsUrl"]}
+                                                            </Link>
+                                                        </Typography>
+                                                        <Typography variant="body2" color="textSecondary" component="p">
+                                                            Token ID: {d.attributes["TokenId"]}
+                                                        </Typography>
+                                                    </CardContent>
                                                 </Card>
                                             </div>
                                         )
@@ -178,7 +167,7 @@ const MyPage = () => {
                         </>
                     )
             }
-        </div >
+        </div>
 
     );
 }
