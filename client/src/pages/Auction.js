@@ -1,9 +1,9 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, } from 'react-redux'
-import { Typography, Card, CardHeader, Avatar, CardMedia, CardContent, Link, IconButton, makeStyles } from '@material-ui/core';
+import { Typography, Card, CardHeader, Avatar, CardMedia, CardContent, Link, makeStyles, Button } from '@material-ui/core';
 import { red } from '@material-ui/core/colors';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { useMoralisQuery } from 'react-moralis';
 
 const useStyles = makeStyles((theme) => ({
@@ -20,11 +20,12 @@ const useStyles = makeStyles((theme) => ({
     },
     cardContainer: {
         display: 'flex',
-        padding: '2rem 6rem',
         overflow: 'hidden',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
     },
     cardRoot: {
-        width: '75%',
+        padding: '2rem',
     },
     carouselItem: {
         backgroundColor: '#3F50B5',
@@ -73,13 +74,13 @@ const Auction = () => {
     return (
         <div style={{ height: '60.4rem' }}>
             <Typography component="h1" variant="h3" gutterBottom style={{ padding: '5px' }}>
-                Welcome to Auction
+                Find your favorite NFT
             </Typography>
             <div className={classes.cardContainer}>
                 {data.map((d) => {
                     return (
-                        <div key={d.attributes["TokenId"]}>
-                            <Card className={classes.cardRoot} >
+                        <div key={d.attributes["TokenId"]} className={classes.cardRoot}>
+                            <Card>
                                 <CardHeader
                                     avatar={
                                         <Avatar aria-label="recipe" className={classes.avatar}>
@@ -87,9 +88,7 @@ const Auction = () => {
                                         </Avatar>
                                     }
                                     action={
-                                        <IconButton aria-label="settings" onClick={() => auctionDetailHandler(d)}>
-                                            <MoreVertIcon />
-                                        </IconButton>
+                                        <Button variant="text" startIcon={<OpenInNewIcon />} onClick={() => auctionDetailHandler(d)}>Detail</Button>
                                     }
                                     title={d.attributes["Name"]}
                                 />
