@@ -7,10 +7,7 @@ const auctionSetting = {
 
 module.exports = async function (deployer, network, account) {
 
-    let currentDate = new Date(Date.now());
-    let auctionTimeEnd = currentDate.setMonth(currentDate.getMonth() + 1);
-
-    deployer.deploy(Auction, auctionTimeEnd, account[0]);
+    deployer.deploy(Auction);
 
     await deployer.deploy(ArtToken, "Art NFT", "ANFT");
     let tokenInstance = await ArtToken.deployed();
