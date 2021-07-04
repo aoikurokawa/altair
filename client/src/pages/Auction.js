@@ -110,15 +110,6 @@ const Auction = () => {
                                     <Typography variant="body2" color="textSecondary" component="p">
                                         Token ID: {d.attributes["TokenId"]}
                                     </Typography>
-                                    {
-                                        d.attributes["IsSelled"] ?
-                                            <Typography variant="body2" color="textSecondary" component="p">
-                                                Sale
-                                            </Typography> :
-                                            <Typography variant="body2" color="textSecondary" component="p">
-                                                Not Sale
-                                            </Typography>
-                                    }
                                 </CardContent>
                             </Card>
                         </div>

@@ -116,10 +116,9 @@ const MyPage = () => {
                                         return (
                                             <div key={d.attributes["TokenId"]} className={classes.cardRoot}>
                                                 <Card>
-
                                                     {d.attributes["IsSelled"] ?
                                                         <div style={{ display: 'flex', justifyContent: "space-between", padding: "0 1rem" }}>
-                                                            <Typography component="span" variant="h4">Now Auction</Typography>
+                                                            <Typography component="span" variant="h4">Auction Now</Typography>
                                                             <IconButton aria-label="settings" onClick={() => auctionDetailHandler(d)}>
                                                                 <OpenInNewIcon />
                                                             </IconButton>

@@ -44,10 +44,10 @@ const Home = () => {
                 <Container className={classes.textContainer}>NFT Market</Container>
                 <Container className={classes.buttonContainer}>
                     <Link to="/auction">
-                        <Button variant="contained" className={classes.button}>Auction</Button>
+                        <Button variant="contained" className={classes.button}>Explore</Button>
                     </Link>
                     <Link>
-                        <Button variant="contained" className={classes.button}>Crowdfunding</Button>
+                        <Button variant="contained" className={classes.button}>Support</Button>
                     </Link>
 
                 </Container>
