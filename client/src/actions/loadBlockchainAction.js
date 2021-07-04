@@ -63,17 +63,16 @@ export const auctionStartAction = (_tokenId, _auctionTimeEnd, _objectId) => asyn
         .send(config)
         .on("receipt", (res) => {
             console.log(res);
+            const Nft = new Moralis.Object.extend("Nft");
+            const query = new Moralis.Query(Nft);
+            query.get(_objectId)
+                .then((result) => {
+                    result.set("IsSelled", true);
+                    result.save();
+                }, (error) => {
+                    console.log("Error occured", error);
+                });
         });
-
-    const Nft = new Moralis.Object.extend("Nft");
-    const query = new Moralis.Query(Nft);
-    query.get(_objectId)
-        .then((result) => {
-            result.set("IsSelled", true);
-            result.save();
-        }, (error) => {
-            console.log("Error occured", error);
-        })
 
     dispatch({
         type: "CLOSE_MODAL",

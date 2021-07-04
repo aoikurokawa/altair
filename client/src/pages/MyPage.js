@@ -3,12 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useMoralisQuery } from 'react-moralis';
 import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, Link, makeStyles, } from '@material-ui/core';
 import GavelIcon from '@material-ui/icons/Gavel';
+import StopIcon from '@material-ui/icons/Stop';
 import { red } from '@material-ui/core/colors';
 import { PulseLoader } from 'react-spinners';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        height: '60.4rem',
         paddingTop: '1rem',
     },
     loader: {
@@ -20,11 +20,12 @@ const useStyles = makeStyles((theme) => ({
     },
     cardContainer: {
         display: 'flex',
-        padding: '2rem 6rem',
         overflow: 'hidden',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
     },
     cardRoot: {
-        width: '75%',
+        padding: '2rem',
     },
     carouselItem: {
         backgroundColor: '#3F50B5',
@@ -54,7 +55,7 @@ const MyPage = () => {
     const [arrayData, setArrayData] = useState([]);
     const dispatch = useDispatch();
     const { accounts } = useSelector((state) => state.artToken);
-    const { data, error, isFetching } = useMoralisQuery("Nft");
+    const { data, isFetching } = useMoralisQuery("Nft");
 
     useEffect(() => {
         const array = [];
@@ -103,8 +104,8 @@ const MyPage = () => {
                                 <div className={classes.cardContainer}>
                                     {arrayData.map((d) => {
                                         return (
-                                            <div key={d.attributes["TokenId"]}>
-                                                <Card className={classes.cardRoot} >
+                                            <div key={d.attributes["TokenId"]} className={classes.cardRoot}>
+                                                <Card>
                                                     <CardHeader
                                                         avatar={
                                                             <Avatar aria-label="recipe" className={classes.avatar}>
