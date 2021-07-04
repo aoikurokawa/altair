@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles } from '@material-ui/core';
 import { Container } from '@material-ui/core';
@@ -8,6 +8,7 @@ import { CardContent } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 
 import { widthdrawHandler } from '../actions/loadBlockchainAction';
+import { auctionContractHandler } from '../actions/loadBlockchainAction';
 
 const useStyles = makeStyles({
     cardRoot: {
@@ -41,6 +42,11 @@ const DisplayPrice = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { highestBid, auctionTimeEnd, contractInstance } = useSelector((state) => state.loadBlockchain);
+    const { nftDetail } = useSelector((state) => state.artToken);
+
+    useEffect(() => {
+        dispatch(auctionContractHandler(nftDetail.attributes["TokenId"]));
+    }, [])
 
     const openModal = () => {
         dispatch({

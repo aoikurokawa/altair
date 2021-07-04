@@ -47,6 +47,7 @@ const BidModal = () => {
     const [price, setPrice] = useState(0);
     const classes = useStyles();
     const { isModalVisible, functionType, title, objectId } = useSelector((state) => state.modal);
+    const { nftDetail } = useSelector((state) => state.artToken);
     const dispatch = useDispatch();
 
 
@@ -57,7 +58,7 @@ const BidModal = () => {
     };
 
     const bidHandler = () => {
-        dispatch(bidHandlerAction(price));
+        dispatch(bidHandlerAction(nftDetail.attributes["TokenId"], price));
         dispatch({
             type: 'CLOSE_MODAL'
         });

@@ -1,22 +1,6 @@
-export const AUCTIONADDRESS = "0x6C31e267069b7daa05bA7151E27dDd5a769935d2";
+export const AUCTIONADDRESS = "0x9407907bE5f805E8F1535e18438E35252495d101";
 
 export const AUCTIONABI = [
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_biddingTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address payable",
-        "name": "_beneficiary",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
   {
     "anonymous": false,
     "inputs": [
@@ -34,6 +18,25 @@ export const AUCTIONABI = [
       }
     ],
     "name": "AuctionEnded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "beneficiary",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "biddingTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "AuctionStarted",
     "type": "event"
   },
   {
@@ -81,8 +84,33 @@ export const AUCTIONABI = [
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "auctionTimeEnd",
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_tokenId",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_biddingTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "auctionStart",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function",
+    "payable": true
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_tokenId",
+        "type": "string"
+      }
+    ],
+    "name": "getHighestBid",
     "outputs": [
       {
         "internalType": "uint256",
@@ -95,22 +123,14 @@ export const AUCTIONABI = [
     "constant": true
   },
   {
-    "inputs": [],
-    "name": "beneficiary",
-    "outputs": [
+    "inputs": [
       {
-        "internalType": "address payable",
-        "name": "",
-        "type": "address"
+        "internalType": "string",
+        "name": "_tokenId",
+        "type": "string"
       }
     ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
-  {
-    "inputs": [],
-    "name": "highestBid",
+    "name": "getAuctionTimeEnd",
     "outputs": [
       {
         "internalType": "uint256",
@@ -123,21 +143,13 @@ export const AUCTIONABI = [
     "constant": true
   },
   {
-    "inputs": [],
-    "name": "highestBidder",
-    "outputs": [
+    "inputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        "internalType": "string",
+        "name": "_tokenId",
+        "type": "string"
       }
     ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
-  {
-    "inputs": [],
     "name": "bid",
     "outputs": [],
     "stateMutability": "payable",
@@ -145,7 +157,13 @@ export const AUCTIONABI = [
     "payable": true
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_tokenId",
+        "type": "string"
+      }
+    ],
     "name": "withdraw",
     "outputs": [
       {
@@ -158,7 +176,13 @@ export const AUCTIONABI = [
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_tokenId",
+        "type": "string"
+      }
+    ],
     "name": "auctionEnd",
     "outputs": [],
     "stateMutability": "nonpayable",

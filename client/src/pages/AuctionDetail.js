@@ -3,6 +3,7 @@ import React from 'react';
 import Carousel from '../components/Carouselmage';
 import DisplayPrice from '../components/DisplayPrice';
 
+
 const AuctionDetail = () => {
 
     return (

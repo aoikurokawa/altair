@@ -13,15 +13,16 @@ const loadBlockchain = async () => {
 }
 
 
-export const auctionContractHandler = () => async (dispatch) => {
+export const auctionContractHandler = (_tokenId) => async (dispatch) => {
     const { contractInstance, accounts } = await loadBlockchain();
     dispatch({
         type: "GET_CONTRACTDATA",
         contractInstance: contractInstance,
         accounts: accounts,
     });
+    
     contractInstance.methods
-        .highestBid()
+        .getHighestBid(_tokenId)
         .call()
         .then((result) => {
             dispatch({
@@ -31,31 +32,28 @@ export const auctionContractHandler = () => async (dispatch) => {
         });
 
     contractInstance.methods
-        .auctionTimeEnd()
+        .getAuctionTimeEnd(_tokenId)
         .call()
         .then((res) => {
-
-            let endDate = new Date(res * 1);
-            let auctionTime = endDate.toDateString();
             dispatch({
                 type: "GET_AUCTIONTIMEEND",
-                auctionTimeEnd: auctionTime,
+                auctionTimeEnd: res,
             });
         });
 };
 
-export const bidHandlerAction = (price) => async (dispatch) => {
+export const bidHandlerAction = (_tokenId, _price) => async (dispatch) => {
     const { contractInstance, accounts } = await loadBlockchain();
 
-    if (price <= 0) {
+    if (_price <= 0) {
         alert("Please put more than 0");
     } else {
         let config = {
-            value: Web3.utils.toWei(price, "ether"),
+            value: Web3.utils.toWei(_price, "ether"),
             from: accounts[0],
         };
         contractInstance.methods
-            .bid()
+            .bid(_tokenId)
             .send(config)
             .on("transactionHash", (hash) => {
                 console.log(hash);
