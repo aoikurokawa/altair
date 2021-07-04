@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
 import { Typography, Card, CardHeader, Avatar, CardMedia, CardContent, Link, IconButton, makeStyles } from '@material-ui/core';
 import { red } from '@material-ui/core/colors';
-import GavelIcon from '@material-ui/icons/Gavel';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useMoralisQuery } from 'react-moralis';
 

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import {
     MuiPickersUtilsProvider,
-    KeyboardTimePicker,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 import { useDispatch, useSelector } from 'react-redux';
@@ -102,7 +101,7 @@ const BidModal = () => {
                     }
                     {functionType === "MyPage" &&
                         <Grid container spacing={3} alignItems="center" style={{ height: "100%", textAlign: "center" }}>
-                            <form noValidate autoComplete="off" style={{ display: "flex", alignItems: 'center', padding: '2rem' }}>
+                            <form noValidate autoComplete="off" style={{ display: "flex", alignItems: 'center', padding: '2rem', width: '100%'  }}>
                                 <Container maxWidth="lg" style={{ width: '50%' }}>
                                     <TextField id="outlined-basic" label="Token ID" variant="outlined" name="Token ID" value={tokenId} fullWidth />
                                 </Container>

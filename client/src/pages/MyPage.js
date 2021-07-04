@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMoralisQuery } from 'react-moralis';
-import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, Link, makeStyles, } from '@material-ui/core';
-import GavelIcon from '@material-ui/icons/Gavel';
-import StopIcon from '@material-ui/icons/Stop';
+import { Card, CardHeader, Avatar, IconButton, CardMedia, CardContent, Typography, Link, makeStyles, CardActionArea } from '@material-ui/core';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { red } from '@material-ui/core/colors';
 import { PulseLoader } from 'react-spinners';
 
@@ -106,47 +105,49 @@ const MyPage = () => {
                                         return (
                                             <div key={d.attributes["TokenId"]} className={classes.cardRoot}>
                                                 <Card>
-                                                    <CardHeader
-                                                        avatar={
-                                                            <Avatar aria-label="recipe" className={classes.avatar}>
-                                                                {d.attributes["Account"]}
-                                                            </Avatar>
-                                                        }
-                                                        action={
-                                                            <IconButton aria-label="settings" onClick={() => handleModal(d.id, d.attributes["TokenId"])}>
-                                                                <GavelIcon />
-                                                            </IconButton>
-                                                        }
-                                                        title={d.attributes["Name"]}
-                                                    />
-                                                    <CardMedia
-                                                        className={classes.media}
-                                                        image={d.attributes["IpfsUrl"]}
-                                                        title="Paella dish"
-                                                    />
-                                                    <CardContent>
-                                                        <Typography variant="body2" color="textSecondary" component="p">
-                                                            IPFS Hash: <br />{d.attributes["IpfsHash"]}
-                                                        </Typography>
-                                                        <Typography variant="body2" color="textSecondary" component="p">
-                                                            IPFS URL: <br />
-                                                            <Link href={d.attributes["IpfsUrl"]} target="_blank">
-                                                                {d.attributes["IpfsUrl"]}
-                                                            </Link>
-                                                        </Typography>
-                                                        <Typography variant="body2" color="textSecondary" component="p">
-                                                            Token ID: {d.attributes["TokenId"]}
-                                                        </Typography>
-                                                        {
-                                                            d.attributes["IsSelled"] ?
-                                                                <Typography variant="body2" color="textSecondary" component="p">
-                                                                    Sale
-                                                                </Typography> :
-                                                                <Typography variant="body2" color="textSecondary" component="p">
-                                                                    Not Sale
-                                                                </Typography>
-                                                        }
-                                                    </CardContent>
+                                                    <CardActionArea>
+                                                        <CardHeader
+                                                            avatar={
+                                                                <Avatar aria-label="recipe" className={classes.avatar}>
+                                                                    {d.attributes["Account"]}
+                                                                </Avatar>
+                                                            }
+                                                            action={
+                                                                <IconButton aria-label="settings" onClick={() => handleModal(d.id, d.attributes["TokenId"])}>
+                                                                    <MoreVertIcon />
+                                                                </IconButton>
+                                                            }
+                                                            title={d.attributes["Name"]}
+                                                        />
+                                                        <CardMedia
+                                                            className={classes.media}
+                                                            image={d.attributes["IpfsUrl"]}
+                                                            title="Paella dish"
+                                                        />
+                                                        <CardContent>
+                                                            <Typography variant="body2" color="textSecondary" component="p">
+                                                                IPFS Hash: <br />{d.attributes["IpfsHash"]}
+                                                            </Typography>
+                                                            <Typography variant="body2" color="textSecondary" component="p">
+                                                                IPFS URL: <br />
+                                                                <Link href={d.attributes["IpfsUrl"]} target="_blank">
+                                                                    {d.attributes["IpfsUrl"]}
+                                                                </Link>
+                                                            </Typography>
+                                                            <Typography variant="body2" color="textSecondary" component="p">
+                                                                Token ID: {d.attributes["TokenId"]}
+                                                            </Typography>
+                                                            {
+                                                                d.attributes["IsSelled"] ?
+                                                                    <Typography variant="body2" color="textSecondary" component="p">
+                                                                        Sale
+                                                                    </Typography> :
+                                                                    <Typography variant="body2" color="textSecondary" component="p">
+                                                                        Not Sale
+                                                                    </Typography>
+                                                            }
+                                                        </CardContent>
+                                                    </CardActionArea>
                                                 </Card>
                                             </div>
                                         )
