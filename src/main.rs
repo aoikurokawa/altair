@@ -13,12 +13,18 @@ async fn main() {
         pub_keys.push_str("0xb89bebc699769726a318c8e9971bd3171297c61aea4a6578a7a4f94b547dcba5bac16a89108b6b6a1fe3695d1a874a0b,");
     }
 
-    let params = [("id", pub_keys)];
+    // let params = [("id", pub_keys)];
 
-    let res = client
-        .get(Url::parse(base_url).unwrap())
-        .query(&params)
-        .send()
+    // let res = client
+    //     .get(Url::parse(base_url).unwrap())
+    //     .query(&params)
+    //     .send()
+    //     .await
+    //     .unwrap();
+    let url = format!("{}?id={}", base_url, pub_keys);
+    println!("url: {}", url);
+
+    let res = reqwest::get(url)
         .await
         .unwrap();
 
