@@ -11,13 +11,20 @@ impl warp::reject::Reject for UriTooLong {}
 struct FooParamError;
 impl warp::reject::Reject for FooParamError {}
 
-// fn uri_length_limit(
-//     limit: usize,
-// ) -> impl Filter<
-//     Extract = (Result<Response<String>, warp::Rejection>,),
-//     Error = std::convert::Infallible,
-// > + Copy {
-// }
+fn uri_length_limit(
+    limit: usize,
+) -> impl Filter<Extract = (), Error = std::convert::Infallible> + Copy {
+    warp::any().and(warp::filters::path::full()).and_then(
+        move |path: warp::path::FullPath| async move {
+            let len = path.as_str().len();
+            if len < 10 {
+                Ok(())
+            } else {
+                Err(warp::reject::custom(UriTooLong))
+            }
+        },
+    )
+}
 
 // async fn handle_rejection(err: Rejection) -> Result<impl Reply, std::convert::Infallible> {
 //     let code;
@@ -97,22 +104,22 @@ async fn main() {
             )
         });
 
-    let param_bar = warp::get()
-        .and(warp::path("bar"))
-        .and(warp::path::param().or_else(|_| async {
-            println!("rejecting from /bar/int param filter");
-            Err(warp::reject::custom(BarParamError))
-        }))
-        .and(warp::path::end())
-        .then(|v: u64| async move {
-            println!("running the /bar/int handler");
-            if v % 2 == 0 {
-                Ok(Response::builder().body(format!("bar: {}", v)).unwrap())
-            } else {
-                println!("rejecting from /bar/int");
-                Err(warp::reject::custom(BarParamError))
-            }
-        });
+    // let param_bar = warp::get()
+    //     .and(warp::path("bar"))
+    //     .and(warp::path::param().or_else(|_| async {
+    //         println!("rejecting from /bar/int param filter");
+    //         Err(warp::reject::custom(BarParamError))
+    //     }))
+    //     .and(warp::path::end())
+    //     .then(|v: u64| async move {
+    //         println!("running the /bar/int handler");
+    //         if v % 2 == 0 {
+    //             Ok(Response::builder().body(format!("bar: {}", v)).unwrap())
+    //         } else {
+    //             println!("rejecting from /bar/int");
+    //             Err(warp::reject:.and(route):custom(BarParamError))
+    //         }
+    //     });
 
     // let query_bar = warp::get()
     //     .and(warp::path("bar"))
@@ -131,10 +138,10 @@ async fn main() {
     //     });
 
     // let uri_length_filter = warp::any().and(warp::filters::path::full()).then(
-    //     move |path: warp::path::FullPath| async move {
+    //     |path: warp::path::FullPath| async move {
     //         let len = path.as_str().len();
     //         if len < 10 {
-    //             Ok(Response::builder().body(format!("ok")).unwrap())
+    //             Ok(Response::builder().body(format!("bar")).unwrap())
     //         } else {
     //             Err(warp::reject::custom(UriTooLong))
     //         }
@@ -147,8 +154,8 @@ async fn main() {
         .unify()
         // .or(query_bar.boxed())
         // .unify()
-        .or(param_bar.boxed())
-        .unify()
+        // .or(param_bar.boxed())
+        // .unify();
         .and_then(|res: Result<_, warp::Rejection>| async move {
             match res {
                 Ok(res) => Ok::<_, warp::Rejection>(res),
@@ -158,7 +165,7 @@ async fn main() {
             }
         });
 
-    // let route = uri_length_filter.and(route);
+    // let route = uri_length_limit(10);
 
     warp::serve(route).run(([127, 0, 0, 1], 3030)).await;
 }
