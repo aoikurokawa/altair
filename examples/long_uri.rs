@@ -22,6 +22,10 @@ fn uri_length_limit(limit: usize) -> impl Filter<Extract = ((),), Error = warp::
     )
 }
 
+fn hello_filter() -> impl Filter<Extract = (impl Reply,), Error = warp::Rejection> + Clone {
+    warp::path!("hello" / "warp").map(|| warp::reply::html("Hello, Warp!"))
+}
+
 async fn handle_rejection(err: Rejection) -> Result<impl Reply, std::convert::Infallible> {
     let code;
     let message;
@@ -38,16 +42,18 @@ async fn handle_rejection(err: Rejection) -> Result<impl Reply, std::convert::In
     Ok(warp::reply::with_status(json, code))
 }
 
-fn hello_filter() -> impl Filter<Extract = (impl Reply,), Error = warp::Rejection> + Clone {
-    warp::path!("hello" / "warp").map(|| warp::reply::html("Hello, Warp!"))
-}
-
 #[tokio::main]
 async fn main() {
     let routes = uri_length_limit(10)
         .and(hello_filter())
         .map(|_, reply| reply)
         .recover(handle_rejection);
+
+    // let hello = warp::path!("hello" / "world").map(|| warp::reply::html("Hello, World"));
+
+    // let goodbye = warp::path!("goodbye" / "world").map(|| warp::reply::html("Goodbye, World"));
+
+    // let route = uri_length_limit(10).untuple_one().and(hello.or(goodbye));
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }
