@@ -114,39 +114,39 @@ async fn main() {
             }
         });
 
-    let query_bar = warp::get()
-        .and(warp::path("bar"))
-        .and(warp::query::<BarQuery>().or_else(|_| async {
-            println!("rejecting from /bar query filter");
-            Err(warp::reject::custom(BarParamError))
-        }))
-        .and(warp::path::end())
-        .then(|query| async move {
-            println!("running the /bar handler");
-            Ok::<_, warp::Rejection>(
-                Response::builder()
-                    .body(format!("just bar, got query: {:?}", query))
-                    .unwrapInfalliable(),
-            )
-        });
+    // let query_bar = warp::get()
+    //     .and(warp::path("bar"))
+    //     .and(warp::query::<BarQuery>().or_else(|_| async {
+    //         println!("rejecting from /bar query filter");
+    //         Err(warp::reject::custom(BarParamError))
+    //     }))
+    //     .and(warp::path::end())
+    //     .then(|query| async move {
+    //         println!("running the /bar handler");
+    //         Ok::<_, warp::Rejection>(
+    //             Response::builder()
+    //                 .body(format!("just bar, got query: {:?}", query))
+    //                 .unwrapInfalliable(),
+    //         )
+    //     });
 
-    let uri_length_filter = warp::any().and(warp::filters::path::full()).then(
-        move |path: warp::path::FullPath| async move {
-            let len = path.as_str().len();
-            if len < 10 {
-                Ok(Response::builder().body(format!("ok")).unwrap())
-            } else {
-                Err(warp::reject::custom(UriTooLong))
-            }
-        },
-    );
+    // let uri_length_filter = warp::any().and(warp::filters::path::full()).then(
+    //     move |path: warp::path::FullPath| async move {
+    //         let len = path.as_str().len();
+    //         if len < 10 {
+    //             Ok(Response::builder().body(format!("ok")).unwrap())
+    //         } else {
+    //             Err(warp::reject::custom(UriTooLong))
+    //         }
+    //     },
+    // );
 
     let route = query_foo
         .boxed()
         .or(param_foo.boxed())
         .unify()
-        .or(query_bar.boxed())
-        .unify()
+        // .or(query_bar.boxed())
+        // .unify()
         .or(param_bar.boxed())
         .unify()
         .and_then(|res: Result<_, warp::Rejection>| async move {
@@ -158,7 +158,7 @@ async fn main() {
             }
         });
 
-    let route = uri_length_filter.and(route);
+    // let route = uri_length_filter.and(route);
 
     warp::serve(route).run(([127, 0, 0, 1], 3030)).await;
 }
