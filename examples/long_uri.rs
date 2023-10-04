@@ -33,6 +33,9 @@ async fn handle_rejection(err: Rejection) -> Result<impl Reply, std::convert::In
     if let Some(_) = err.find::<UriTooLong>() {
         code = StatusCode::URI_TOO_LONG;
         message = "URI Too Long";
+    } else if let Some(_) = err.find::<warp::reject::PayloadTooLarge>() {
+        code = StatusCode::URI_TOO_LONG;
+        message = "URI Too Long";
     } else {
         code = StatusCode::OK;
         message = "";
@@ -44,16 +47,18 @@ async fn handle_rejection(err: Rejection) -> Result<impl Reply, std::convert::In
 
 #[tokio::main]
 async fn main() {
-    let routes = uri_length_limit(10)
-        .and(hello_filter())
-        .map(|_, reply| reply)
+    // let routes = uri_length_limit(10)
+    //      .and(hello_filter())
+    //      .map(|_, reply| reply)
+    //      .recover(handle_rejection);
+
+    let hello = warp::path!("hello" / "world").map(|| warp::reply::html("Hello, World"));
+
+    let goodbye = warp::path!("goodbye" / "world").map(|| warp::reply::html("Goodbye, World"));
+
+    let route = warp::any()
+        .and(hello.or(goodbye))
         .recover(handle_rejection);
 
-    // let hello = warp::path!("hello" / "world").map(|| warp::reply::html("Hello, World"));
-
-    // let goodbye = warp::path!("goodbye" / "world").map(|| warp::reply::html("Goodbye, World"));
-
-    // let route = uri_length_limit(10).untuple_one().and(hello.or(goodbye));
-
-    warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
+    warp::serve(route).run(([127, 0, 0, 1], 3030)).await;
 }
