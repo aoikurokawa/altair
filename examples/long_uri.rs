@@ -57,6 +57,7 @@ async fn main() {
     let goodbye = warp::path!("goodbye" / "world").map(|| warp::reply::html("Goodbye, World"));
 
     let route = warp::any()
+        .and(warp::body::content_length_limit(40))
         .and(hello.or(goodbye))
         .recover(handle_rejection);
 
