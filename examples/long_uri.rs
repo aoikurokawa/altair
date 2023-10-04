@@ -47,7 +47,9 @@ async fn handle_rejection(err: Rejection) -> Result<impl Reply, std::convert::In
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt::init();
     // let routes = uri_length_limit(10)
+    //
     //      .and(hello_filter())
     //      .map(|_, reply| reply)
     //      .recover(handle_rejection);
@@ -57,7 +59,6 @@ async fn main() {
     let goodbye = warp::path!("goodbye" / "world").map(|| warp::reply::html("Goodbye, World"));
 
     let route = warp::any()
-        .and(warp::body::content_length_limit(40))
         .and(hello.or(goodbye))
         .recover(handle_rejection);
 
