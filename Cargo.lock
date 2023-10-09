@@ -1389,7 +1389,7 @@ dependencies = [
 [[package]]
 name = "warp"
 version = "0.3.6"
-source = "git+https://github.com/aoikurokawa/warp.git?branch=master#9d081461ae1167eb321585ce424f4fef6cf0092b"
+source = "git+https://github.com/aoikurokawa/warp.git?branch=uri-too-long#8f8a39f7ce12d6e46c7deae469b7d799689ba192"
 dependencies = [
  "bytes",
  "futures-channel",

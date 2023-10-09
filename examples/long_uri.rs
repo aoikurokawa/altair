@@ -33,12 +33,12 @@ async fn handle_rejection(err: Rejection) -> Result<impl Reply, std::convert::In
     if let Some(_) = err.find::<UriTooLong>() {
         code = StatusCode::URI_TOO_LONG;
         message = "URI Too Long";
-    } else if let Some(_) = err.find::<warp::reject::PayloadTooLarge>() {
+    } else if let Some(_) = err.find::<warp::reject::UriTooLong>() {
         code = StatusCode::URI_TOO_LONG;
         message = "URI Too Long";
     } else {
         code = StatusCode::OK;
-        message = "";
+        message = "Something went wrong";
     }
 
     let json = warp::reply::json(&message);
