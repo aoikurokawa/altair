@@ -33,9 +33,12 @@ async fn handle_rejection(err: Rejection) -> Result<impl Reply, std::convert::In
     if let Some(_) = err.find::<UriTooLong>() {
         code = StatusCode::URI_TOO_LONG;
         message = "URI Too Long";
+    } else if let Some(_) = err.find::<warp::reject::UriTooLong>() {
+        code = StatusCode::URI_TOO_LONG;
+        message = "URI Too Long";
     } else {
         code = StatusCode::OK;
-        message = "";
+        message = "Something went wrong";
     }
 
     let json = warp::reply::json(&message);
@@ -44,6 +47,7 @@ async fn handle_rejection(err: Rejection) -> Result<impl Reply, std::convert::In
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt::init();
     let routes = uri_length_limit(10)
         .and(hello_filter())
         .map(|_, reply| reply)
@@ -53,7 +57,7 @@ async fn main() {
 
     // let goodbye = warp::path!("goodbye" / "world").map(|| warp::reply::html("Goodbye, World"));
 
-    // let route = uri_length_limit(10).untuple_one().and(hello.or(goodbye));
+    // let route = warp::any().and(hello.or(goodbye)).recover(handle_rejection);
 
     warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
 }
