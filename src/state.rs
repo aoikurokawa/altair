@@ -14,6 +14,19 @@ pub struct MovieAccountState {
     pub description: String,
 }
 
+impl MovieAccountState {
+    pub const DISCRIMINATOR: &'static str = "review";
+
+    pub fn get_account_size(title: &str, description: &str) -> usize {
+        return (4 + Self::DISCRIMINATOR.len())
+            + 1
+            + 1
+            + 32
+            + (4 + title.len())
+            + (4 + description.len());
+    }
+}
+
 impl Sealed for MovieAccountState {}
 
 impl IsInitialized for MovieAccountState {
@@ -27,6 +40,11 @@ pub struct MovieCommentCounter {
     pub discriminator: String,
     pub is_initialized: bool,
     pub counter: u64,
+}
+
+impl MovieCommentCounter {
+    pub const DISCRIMINATOR: &'static str = "counter";
+    pub const SIZE: usize = (4 + Self::DISCRIMINATOR.len()) + 1 + 8;
 }
 
 impl Sealed for MovieCommentCounter {}
@@ -45,6 +63,14 @@ pub struct MovieComment {
     pub commenter: Pubkey,
     pub comment: String,
     pub count: u64,
+}
+
+impl MovieComment {
+    pub const DISCRIMINATOR: &'static str = "comment";
+
+    pub fn get_account_size(comment: &str) -> usize {
+        return (4 + Self::DISCRIMINATOR.len()) + 1 + 32 + 32 + (4 + comment.len()) + 8;
+    }
 }
 
 impl Sealed for MovieComment {}
