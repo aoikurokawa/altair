@@ -11,6 +11,8 @@ no-entrypoint = []
 [dependencies]
 borsh = "0.10.3"
 solana-program = "1.17.17"
+spl-associated-token-account = { version = "2.3.0", features = ["no-entrypoint"] }
+spl-token = { version = "4.0.0", features = ["no-entrypoint"] }
 thiserror = "1.0.56"
 
 
