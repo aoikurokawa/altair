@@ -12,8 +12,14 @@ use solana_program::{
     program_pack::IsInitialized,
     pubkey::Pubkey,
     system_instruction,
-    sysvar::{rent::Rent, Sysvar},
+    system_program::ID as SYSTEM_PROGRAM_ID,
+    sysvar::{
+        rent::{Rent, ID as RENT_PROGRAM_ID},
+        Sysvar,
+    },
 };
+use spl_token::instruction::initialize_mint;
+use spl_token::ID as TOKEN_PROGRAM_ID;
 use std::convert::TryInto;
 
 pub fn process_instruction(
@@ -34,6 +40,7 @@ pub fn process_instruction(
             description,
         } => update_movie_review(program_id, accounts, title, rating, description),
         MovieInstruction::AddComment { comment } => add_comment(program_id, accounts, comment),
+        MovieInstruction::InitializeMint => initialize_token_mint(program_id, accounts),
     }
 }
 
@@ -330,6 +337,80 @@ pub fn add_comment(
     msg!("Comment Count: {}", counter_data.counter);
     counter_data.counter += 1;
     counter_data.serialize(&mut &mut pda_counter.data.borrow_mut()[..])?;
+
+    Ok(())
+}
+
+pub fn initialize_token_mint(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
+    let account_info_iter = &mut accounts.iter();
+
+    let initializer = next_account_info(account_info_iter)?;
+    let token_mint = next_account_info(account_info_iter)?;
+    let mint_auth = next_account_info(account_info_iter)?;
+    let system_program = next_account_info(account_info_iter)?;
+    let token_program = next_account_info(account_info_iter)?;
+    let sysvar_rent = next_account_info(account_info_iter)?;
+
+    let (mint_pda, mint_bump) = Pubkey::find_program_address(&[b"token_mint"], program_id);
+    let (mint_auth_pda, _mint_auth_bump) =
+        Pubkey::find_program_address(&[b"token_auth"], program_id);
+
+    msg!("Token mint: {:?}", mint_pda);
+    msg!("Mint authority: {:?}", mint_auth);
+
+    if mint_pda != *token_mint.key {
+        msg!("Incorrect token mint account");
+        return Err(ReviewError::InvalidPDA.into());
+    }
+
+    if *token_program.key != TOKEN_PROGRAM_ID {
+        msg!("Incorrect token program");
+        return Err(ReviewError::IncorrectAccountError.into());
+    }
+
+    if mint_auth_pda != *mint_auth.key {
+        msg!("Incorrect mint auth account");
+        return Err(ReviewError::IncorrectAccountError.into());
+    }
+
+    if *system_program.key != SYSTEM_PROGRAM_ID {
+        msg!("Incorrect system program");
+        return Err(ReviewError::IncorrectAccountError.into());
+    }
+
+    if *sysvar_rent.key != RENT_PROGRAM_ID {
+        msg!("Incorrect rent program");
+        return Err(ReviewError::IncorrectAccountError.into());
+    }
+
+    let rent = Rent::get()?;
+    let rent_lamports = rent.minimum_balance(82);
+
+    invoke_signed(
+        &system_instruction::create_account(
+            initializer.key,
+            token_mint.key,
+            rent_lamports,
+            82,
+            token_program.key,
+        ),
+        &[
+            initializer.clone(),
+            token_mint.clone(),
+            system_program.clone(),
+        ],
+        &[&[b"token_mint", &[mint_bump]]],
+    )?;
+
+    msg!("Created token mint account");
+
+    invoke_signed(
+        &initialize_mint(token_program.key, token_mint.key, mint_auth.key, None, 9)?,
+        &[token_mint.clone(), sysvar_rent.clone(), mint_auth.clone()],
+        &[&[b"token_mint", &[mint_bump]]],
+    )?;
+
+    msg!("Initialized token mint");
 
     Ok(())
 }
