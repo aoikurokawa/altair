@@ -44,6 +44,7 @@ pub struct MovieCommentCounter {
 
 impl MovieCommentCounter {
     pub const DISCRIMINATOR: &'static str = "counter";
+
     pub const SIZE: usize = (4 + Self::DISCRIMINATOR.len()) + 1 + 8;
 }
 
