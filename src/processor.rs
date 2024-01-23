@@ -2,6 +2,7 @@ use crate::instruction::MovieInstruction;
 use crate::state::{MovieAccountState, MovieComment};
 use crate::{error::ReviewError, state::MovieCommentCounter};
 use borsh::BorshSerialize;
+use solana_program::native_token::LAMPORTS_PER_SOL;
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
     borsh0_10::try_from_slice_unchecked,
@@ -18,6 +19,7 @@ use solana_program::{
         Sysvar,
     },
 };
+use spl_associated_token_account::get_associated_token_address;
 use spl_token::instruction::initialize_mint;
 use spl_token::ID as TOKEN_PROGRAM_ID;
 use std::convert::TryInto;
@@ -60,9 +62,12 @@ pub fn add_movie_review(
 
     let initializer = next_account_info(account_info_iter)?;
     let pda_account = next_account_info(account_info_iter)?;
-    let system_program = next_account_info(account_info_iter)?;
-
     let pda_counter = next_account_info(account_info_iter)?;
+    let token_mint = next_account_info(account_info_iter)?;
+    let mint_auth = next_account_info(account_info_iter)?;
+    let user_ata = next_account_info(account_info_iter)?;
+    let system_program = next_account_info(account_info_iter)?;
+    let token_program = next_account_info(account_info_iter)?;
 
     if !initializer.is_signer {
         msg!("Missing required signature");
@@ -180,6 +185,45 @@ pub fn add_movie_review(
 
     counter_data.serialize(&mut &mut pda_counter.data.borrow_mut()[..])?;
 
+    msg!("deriving mint authority");
+    let (mint_pda, _mint_bump) = Pubkey::find_program_address(&[b"token_mint"], program_id);
+    let (mint_auth_pda, mint_auth_bump) =
+        Pubkey::find_program_address(&[b"token_auth"], program_id);
+
+    if *token_mint.key != mint_pda {
+        msg!("Incorrect token mint");
+        return Err(ReviewError::IncorrectAccountError.into());
+    }
+
+    if *mint_auth.key != mint_auth_pda {
+        msg!("Mint passed in and mint derived do not match");
+        return Err(ReviewError::InvalidPDA.into());
+    }
+
+    if *user_ata.key != get_associated_token_address(initializer.key, token_mint.key) {
+        msg!("Incorrect token mint");
+        return Err(ReviewError::IncorrectAccountError.into());
+    }
+
+    if *token_program.key != TOKEN_PROGRAM_ID {
+        msg!("Incorrect token program");
+        return Err(ReviewError::IncorrectAccountError.into());
+    }
+
+    msg!("Mintint 10 tokens to User associated token account");
+    invoke_signed(
+        &spl_token::instruction::mint_to(
+            token_program.key,
+            token_mint.key,
+            user_ata.key,
+            mint_auth.key,
+            &[],
+            10 * LAMPORTS_PER_SOL,
+        )?,
+        &[token_mint.clone(), user_ata.clone(), mint_auth.clone()],
+        &[&[b"token_auth", &[mint_auth_bump]]],
+    )?;
+
     Ok(())
 }
 
@@ -274,7 +318,11 @@ pub fn add_comment(
     let pda_review = next_account_info(account_info_iter)?;
     let pda_counter = next_account_info(account_info_iter)?;
     let pda_comment = next_account_info(account_info_iter)?;
+    let token_mint = next_account_info(account_info_iter)?;
+    let mint_auth = next_account_info(account_info_iter)?;
+    let user_ata = next_account_info(account_info_iter)?;
     let system_program = next_account_info(account_info_iter)?;
+    let token_program = next_account_info(account_info_iter)?;
 
     let mut counter_data =
         try_from_slice_unchecked::<MovieCommentCounter>(&pda_counter.data.borrow()).unwrap();
@@ -337,6 +385,45 @@ pub fn add_comment(
     msg!("Comment Count: {}", counter_data.counter);
     counter_data.counter += 1;
     counter_data.serialize(&mut &mut pda_counter.data.borrow_mut()[..])?;
+
+    msg!("deriving mint authority");
+    let (mint_pda, _mint_bump) = Pubkey::find_program_address(&[b"token_mint"], program_id);
+    let (mint_auth_pda, mint_auth_bump) =
+        Pubkey::find_program_address(&[b"token_auth"], program_id);
+
+    if *token_mint.key != mint_pda {
+        msg!("Incorrect token mint");
+        return Err(ReviewError::IncorrectAccountError.into());
+    }
+
+    if *mint_auth.key != mint_auth_pda {
+        msg!("Mint passed in and mint derived do not match");
+        return Err(ReviewError::InvalidPDA.into());
+    }
+
+    if *user_ata.key != get_associated_token_address(commenter.key, token_mint.key) {
+        msg!("Incorrect token mint");
+        return Err(ReviewError::IncorrectAccountError.into());
+    }
+
+    if *token_program.key != TOKEN_PROGRAM_ID {
+        msg!("Incorrect token program");
+        return Err(ReviewError::IncorrectAccountError.into());
+    }
+
+    msg!("Mintint 5 tokens to User associated token account");
+    invoke_signed(
+        &spl_token::instruction::mint_to(
+            token_program.key,
+            token_mint.key,
+            user_ata.key,
+            mint_auth.key,
+            &[],
+            5 * LAMPORTS_PER_SOL,
+        )?,
+        &[token_mint.clone(), user_ata.clone(), mint_auth.clone()],
+        &[&[b"token_auth", &[mint_auth_bump]]],
+    )?;
 
     Ok(())
 }
