@@ -166,7 +166,7 @@ pub fn add_movie_review(
             system_program.clone(),
         ],
         &[&[
-            pda_counter.key.as_ref(),
+            pda.as_ref(),
             "comment".as_ref(),
             &[counter_bump],
         ]],
