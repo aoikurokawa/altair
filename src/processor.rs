@@ -46,17 +46,11 @@ pub fn process_instruction(
     }
 }
 
-pub fn add_movie_review(
+pub fn open_lootbox(
     program_id: &Pubkey,
     accounts: &[AccountInfo],
-    title: String,
-    rating: u8,
-    description: String,
 ) -> ProgramResult {
-    msg!("Adding movie review...");
-    msg!("Title: {}", title);
-    msg!("Rating: {}", rating);
-    msg!("Description: {}", description);
+    msg!("Opening the lootbox...");
 
     let account_info_iter = &mut accounts.iter();
 
