@@ -1,23 +1,10 @@
 [package]
-name = "logi"
+name = "altair"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[features]
-no-entrypoint = []
-
 [dependencies]
-assert_matches = "1.5.0"
-borsh = "0.10.3"
-solana-program = "1.17.17"
-solana-program-test = "1.17.17"
-solana-sdk = "1.17.17"
-spl-associated-token-account = { version = "2.3.0", features = ["no-entrypoint"] }
-spl-token = { version = "4.0.0", features = ["no-entrypoint"] }
-thiserror = "1.0.56"
 
 
-[lib]
-crate-type = ["cdylib", "lib"]
