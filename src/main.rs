@@ -1,8 +1,9 @@
 use futures_util::{SinkExt, StreamExt};
+use reqwest::header::{ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use tokio::{
     io::{self},
-    sync::mpsc::{self, Sender, UnboundedSender},
+    sync::mpsc::{self, UnboundedSender},
 };
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
@@ -34,15 +35,29 @@ impl JsonRpcBuilder {
             method,
         }
     }
-}
 
-impl ToString for JsonRpcBuilder {
-    fn to_string(&self) -> String {
-        let req = serde_json::json!({
-            "jsonrpc": self.jsonrpc,
-            "id": self.id,
-            "method": self.method.to_string(),
-        });
+    pub fn body(&self, slot: Option<usize>, indices: Option<Vec<usize>>) -> String {
+        let req = match self.method {
+            Method::GetShreds => {
+                serde_json::json!({
+                    "jsonrpc": self.jsonrpc,
+                    "id": self.id,
+                    "method": self.method.to_string(),
+                })
+            }
+            Method::SlotSubscribe => {
+                serde_json::json!({
+                        "jsonrpc": self.jsonrpc,
+                        "id": self.id,
+                        "method": self.method.to_string(),
+                "params":[
+                    slot.unwrap(),
+                    indices.unwrap(),
+                    { "commitment": "confirmed" }
+                ]
+                    })
+            }
+        };
 
         req.to_string()
     }
@@ -71,17 +86,21 @@ pub struct SlotSubscribe {
 }
 
 impl SlotSubscribe {
-    pub fn request_shreds(&self, indices: Vec<usize>) {
-        let req = serde_json::json!({
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "getShreds",
-            "params": [
-                self.slot,
-                indices,
-                { "commitment": "confirmed" }
-            ]
-        });
+    pub async fn request_shreds(&self, indices: Vec<usize>, url: &str) {
+        let json = JsonRpcBuilder::new(Method::GetShreds);
+        let body = json.body(Some(self.slot as usize), Some(indices));
+        let req_client = reqwest::Client::new();
+        let res = req_client
+            .post(url)
+            .body(body)
+            .header(CONTENT_TYPE, "application/json")
+            .header(ACCEPT, "application/json")
+            .send()
+            .await
+            .expect("error")
+            .text()
+            .await
+            .expect("error");
     }
 }
 
@@ -97,10 +116,9 @@ impl Client {
     pub async fn subscribe_slot(&self, slot_tx: UnboundedSender<SlotSubscribe>) -> io::Result<()> {
         let (mut ws_stream, _res) = connect_async(&self.rpc).await.expect("failed to connect");
 
-        // let req = r#"{ "jsonrpc": "2.0", "id": 1, "method": "slotSubscribe" }"#;
         let req = JsonRpcBuilder::new(Method::SlotSubscribe);
         ws_stream
-            .send(Message::Text(req.to_string()))
+            .send(Message::Text(req.body(None, None)))
             .await
             .map_err(|_e| io::Error::new(io::ErrorKind::ConnectionRefused, ""))?;
 
