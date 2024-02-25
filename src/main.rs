@@ -1,6 +1,7 @@
 use futures_util::{SinkExt, StreamExt};
 use reqwest::header::{ACCEPT, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
+use solana_ledger::shred::{shred_code::ShredCode, ShredData};
 use tokio::{
     io::{self},
     sync::mpsc::{self, UnboundedSender},
@@ -85,23 +86,25 @@ pub struct SlotSubscribe {
     pub slot: i64,
 }
 
-impl SlotSubscribe {
-    pub async fn request_shreds(&self, indices: Vec<usize>, url: &str) {
-        let json = JsonRpcBuilder::new(Method::GetShreds);
-        let body = json.body(Some(self.slot as usize), Some(indices));
-        let req_client = reqwest::Client::new();
-        let res = req_client
-            .post(url)
-            .body(body)
-            .header(CONTENT_TYPE, "application/json")
-            .header(ACCEPT, "application/json")
-            .send()
-            .await
-            .expect("error")
-            .text()
-            .await
-            .expect("error");
-    }
+impl SlotSubscribe {}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetShredResponse {
+    pub jsonrpc: String,
+    pub result: GetShredResult,
+    pub id: i64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GetShredResult {
+    pub leader: String,
+    pub shreds: Vec<Option<RpcShred>>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RpcShred {
+    pub shred_data: Option<ShredData>,
+    pub shred_code: Option<ShredCode>,
 }
 
 pub struct Client {
@@ -149,6 +152,25 @@ impl Client {
     }
 
     pub async fn get_shreds_and_leader_for_slot() {}
+
+    pub async fn request_shreds(&self, indices: Vec<usize>, url: &str) {
+        let json = JsonRpcBuilder::new(Method::GetShreds);
+        let body = json.body(Some(self.slot as usize), Some(indices));
+        let req_client = reqwest::Client::new();
+        let res = req_client
+            .post(url)
+            .body(body)
+            .header(CONTENT_TYPE, "application/json")
+            .header(ACCEPT, "application/json")
+            .send()
+            .await
+            .expect("error")
+            .text()
+            .await
+            .expect("error");
+
+        let shred_res: GetShredResponse = serde_json::from_str(&res);
+    }
 }
 
 #[tokio::main]
