@@ -125,8 +125,6 @@ impl Client {
             .await
             .map_err(|_e| io::Error::new(io::ErrorKind::ConnectionRefused, ""))?;
 
-        eprintln!("write a request");
-
         let _payload = ws_stream.next().await;
 
         while let Some(res) = ws_stream.next().await {
