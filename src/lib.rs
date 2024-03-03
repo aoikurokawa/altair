@@ -1,8 +1,12 @@
+use std::str::FromStr;
+
 use anyhow::anyhow;
 use futures_util::{SinkExt, StreamExt};
 use rand::{rngs::StdRng, Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 use shred::{ShredDef, ShredResult};
+use solana_ledger::shred::Shred;
+use solana_sdk::pubkey::Pubkey;
 use tokio::{
     io,
     sync::mpsc::{self, UnboundedReceiver, UnboundedSender},
@@ -147,36 +151,71 @@ impl Client {
         shred_tx: UnboundedSender<ShredResult>,
         sample_qty: usize,
     ) -> anyhow::Result<()> {
-        if let Some(slot_sub) = slot_rx.recv().await {
-            let res = ShredDef::request_shreds(slot_sub.slot, vec![0], &self.rpc).await?;
-            let first_shred = match res.shreds.get(1) {
-                Some(first_shred) => {
-                    if let Some(shred) = first_shred {
-                        // let shred: Shred = shred.to_owned().try_into()?;
-                        shred.to_owned()
-                    } else {
+        loop {
+            if let Some(slot_sub) = slot_rx.recv().await {
+                let res = ShredDef::request_shreds(slot_sub.slot, vec![0], &self.rpc).await?;
+                let first_shred = match res.shreds.get(1) {
+                    Some(first_shred) => {
+                        if let Some(shred) = first_shred {
+                            // let shred: Shred = shred.to_owned().try_into()?;
+                            shred.to_owned()
+                        } else {
+                            return Err(anyhow!("Shred not found"));
+                        }
+                    }
+                    None => {
                         return Err(anyhow!("Shred not found"));
                     }
-                }
-                None => {
-                    return Err(anyhow!("Shred not found"));
-                }
-            };
+                };
 
-            let max_shreds_per_slot = match first_shred {
-                ShredDef::ShredCode(shred_code) => shred_code.num_code_shreds(),
-                // ShredDef::ShredData(_) => ShredDef::ShredCode(_).num_data_shreds()?,
-                ShredDef::ShredData(_) => 0,
-            };
+                let max_shreds_per_slot = match first_shred {
+                    ShredDef::ShredCode(shred_code) => shred_code.num_code_shreds(),
+                    // ShredDef::ShredData(_) => ShredDef::ShredCode(_).num_data_shreds()?,
+                    ShredDef::ShredData(_) => 0,
+                };
 
-            let mut indices = gen_random_indices(max_shreds_per_slot, sample_qty);
-            indices.push(0);
+                let mut indices = gen_random_indices(max_shreds_per_slot, sample_qty);
+                indices.push(0);
 
-            let shreds_for_slot =
-                ShredDef::request_shreds(slot_sub.slot, indices, &self.rpc).await?;
+                let shreds_for_slot =
+                    ShredDef::request_shreds(slot_sub.slot, indices, &self.rpc).await?;
+                // let mut shreds = shreds_for_slot.shreds;
+                // let leader = Pubkey::from_str(&shreds_for_slot.leader)?;
+
+                // shreds.dedup();
+                // shreds.iter().for_each(|shred| {
+                //     if let Some(shred) = shred {
+                //         if shreds
+                //     }
+                // })
+                shred_tx.send(shreds_for_slot);
+            }
         }
+    }
 
-        Ok(())
+    pub async fn shred_verify_loop(
+        shred_rx: &mut UnboundedReceiver<ShredResult>,
+        verified_shred_tx: UnboundedSender<(Shred, Pubkey)>,
+    ) -> anyhow::Result<()> {
+        loop {
+            if let Some(shred_result) = shred_rx.recv().await {
+                let shreds: Vec<Shred> = shred_result
+                    .shreds
+                    .into_iter()
+                    .filter(|shred| shred.is_some())
+                    .map(|shred| shred.unwrap())
+                    .filter(|shred| Shred::try_from(shred.to_owned()).is_ok())
+                    .collect();
+                let leader = Pubkey::from_str(&shred_result.leader)?;
+
+                for shred in shreds {
+                    let verified = shred.verify(&leader);
+
+                    if verified {}
+                    verified_shred_tx.send((shred, leader))?;
+                }
+            }
+        }
     }
 
     pub async fn get_shreds_and_leader_for_slot() {}

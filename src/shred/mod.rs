@@ -26,7 +26,7 @@ pub struct ShredResult {
     pub shreds: Vec<Option<ShredDef>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ShredDef {
     ShredCode(ShredCodeDef),
     ShredData(ShredDataDef),
@@ -53,6 +53,19 @@ impl TryFrom<ShredDef> for Shred {
                     .map_err(|_| anyhow!("failed to deserialize shred"))
             }
         }
+    }
+}
+
+impl FromIterator<ShredDef> for Vec<Shred> {
+    fn from_iter<T: IntoIterator<Item = ShredDef>>(iter: T) -> Self {
+        let mut shreds: Vec<Shred> = Vec::new();
+
+        for i in iter {
+            let shred = Shred::try_from(i).expect("convert to Shred");
+            shreds.push(shred)
+        }
+
+        shreds
     }
 }
 

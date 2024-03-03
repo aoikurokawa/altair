@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{legacy, merkle};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ShredCodeDef {
     Legacy(legacy::ShredCode),
     Merkle(merkle::ShredCode),
