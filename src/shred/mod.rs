@@ -22,8 +22,8 @@ struct ShredReponse {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ShredResult {
-    leader: String,
-    shreds: Vec<Option<ShredDef>>,
+    pub leader: String,
+    pub shreds: Vec<Option<ShredDef>>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -32,13 +32,26 @@ pub enum ShredDef {
     ShredData(ShredDataDef),
 }
 
-impl From<ShredDef> for Shred {
-    fn from(value: ShredDef) -> Self {
+impl TryFrom<ShredDef> for Shred {
+    type Error = anyhow::Error;
+    fn try_from(value: ShredDef) -> Result<Self, Self::Error> {
         match value {
             ShredDef::ShredCode(shred_code) => {
-                Shred::new_from_serialized_shred()
-            },
-            ShredDef::ShredData(shred_data) => Shred::ShredData(shred_data),
+                let payload = match shred_code {
+                    ShredCodeDef::Legacy(legacy) => legacy.payload,
+                    ShredCodeDef::Merkle(merkle) => merkle.payload,
+                };
+                Shred::new_from_serialized_shred(payload)
+                    .map_err(|_| anyhow!("failed to deserialize shred"))
+            }
+            ShredDef::ShredData(shred_data) => {
+                let payload = match shred_data {
+                    ShredDataDef::Legacy(legacy) => legacy.payload,
+                    ShredDataDef::Merkle(merkle) => merkle.payload,
+                };
+                Shred::new_from_serialized_shred(payload)
+                    .map_err(|_| anyhow!("failed to deserialize shred"))
+            }
         }
     }
 }
@@ -48,7 +61,7 @@ impl ShredDef {
         slot: usize,
         indices: Vec<usize>,
         url: &str,
-    ) -> anyhow::Result<Self> {
+    ) -> anyhow::Result<ShredResult> {
         let json = JsonRpcBuilder::new(Method::GetShreds);
         let body = json.body(Some(slot as usize), Some(indices));
         let req_client = reqwest::Client::new();
@@ -64,17 +77,34 @@ impl ShredDef {
 
         let shred_res = serde_json::from_str::<ShredReponse>(&res)?;
 
-        match shred_res.result.shreds.get(1) {
-            Some(first_shred) => {
-                if let Some(shred) = first_shred {
-                    return Ok(shred.to_owned());
-                } else {
-                    return Err(anyhow!("Shred not found"));
-                }
-            }
-            None => {
-                return Err(anyhow!("Shred not found"));
-            }
+        Ok(shred_res.result)
+
+        // match shred_res.result.shreds.get(1) {
+        //     Some(first_shred) => {
+        //         if let Some(shred) = first_shred {
+        //             // let shred: Shred = shred.to_owned().try_into()?;
+        //             return Ok(shred.to_owned());
+        //         } else {
+        //             return Err(anyhow!("Shred not found"));
+        //         }
+        //     }
+        //     None => {
+        //         return Err(anyhow!("Shred not found"));
+        //     }
+        // }
+    }
+
+    pub fn num_code_shreds(&self) -> Result<u16, anyhow::Error> {
+        match self {
+            Self::ShredCode(code) => Ok(code.num_code_shreds()),
+            Self::ShredData(_) => Err(anyhow!("invalid shred types")),
+        }
+    }
+
+    pub fn num_data_shreds(&self) -> Result<u16, anyhow::Error> {
+        match self {
+            Self::ShredCode(code) => Ok(code.num_data_shreds()),
+            Self::ShredData(_) => Err(anyhow!("invalid shred types")),
         }
     }
 }

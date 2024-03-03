@@ -7,3 +7,4 @@ pub enum ShredDataDef {
     Legacy(legacy::ShredData),
     Merkle(merkle::ShredData),
 }
+

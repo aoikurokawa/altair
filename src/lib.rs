@@ -1,4 +1,6 @@
+use anyhow::anyhow;
 use futures_util::{SinkExt, StreamExt};
+use rand::{rngs::StdRng, Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 use shred::{ShredDef, ShredResult};
 use tokio::{
@@ -141,16 +143,49 @@ impl Client {
 
     pub async fn shred_update_loop(
         &self,
-        slot_rx: UnboundedReceiver<SlotSubscribe>,
+        slot_rx: &mut UnboundedReceiver<SlotSubscribe>,
         shred_tx: UnboundedSender<ShredResult>,
         sample_qty: usize,
     ) -> anyhow::Result<()> {
         if let Some(slot_sub) = slot_rx.recv().await {
-            let shreds = ShredDef::request_shreds(slot_sub.slot, vec![0], &self.rpc).await?;
+            let res = ShredDef::request_shreds(slot_sub.slot, vec![0], &self.rpc).await?;
+            let first_shred = match res.shreds.get(1) {
+                Some(first_shred) => {
+                    if let Some(shred) = first_shred {
+                        // let shred: Shred = shred.to_owned().try_into()?;
+                        shred.to_owned()
+                    } else {
+                        return Err(anyhow!("Shred not found"));
+                    }
+                }
+                None => {
+                    return Err(anyhow!("Shred not found"));
+                }
+            };
+
+            let max_shreds_per_slot = match first_shred {
+                ShredDef::ShredCode(shred_code) => shred_code.num_code_shreds(),
+                // ShredDef::ShredData(_) => ShredDef::ShredCode(_).num_data_shreds()?,
+                ShredDef::ShredData(_) => 0,
+            };
+
+            let mut indices = gen_random_indices(max_shreds_per_slot, sample_qty);
+            indices.push(0);
+
+            let shreds_for_slot =
+                ShredDef::request_shreds(slot_sub.slot, indices, &self.rpc).await?;
         }
 
         Ok(())
     }
 
     pub async fn get_shreds_and_leader_for_slot() {}
+}
+
+pub fn gen_random_indices(max_shreds_per_slot: u16, sample_qty: usize) -> Vec<usize> {
+    let mut rng = StdRng::from_entropy();
+    let indices: Vec<usize> = (0..sample_qty)
+        .map(|_| rng.gen_range(0..max_shreds_per_slot as usize))
+        .collect();
+    indices
 }
