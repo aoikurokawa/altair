@@ -5,8 +5,17 @@
 
 
 ## References
+SPV
+- https://github.com/Sovereign-Labs/solana-proofs/tree/master
+
+Geyser Plugins
+- https://www.helius.dev/blog/solana-geyser-plugins-streaming-data-at-the-speed-of-light
+
 Space Reference
 - https://www.anchor-lang.com/docs/space
+
+Program Examples
+- https://github.com/solana-developers/program-examples/tree/main
 
 General
 - https://a16zcrypto.com/posts/article/an-introduction-to-light-clients/
