@@ -4,23 +4,32 @@ use std::{
     sync::atomic::{AtomicU8, Ordering},
 };
 
+use borsh::BorshSerialize;
 use config::Config;
 use log::error;
 use solana_geyser_plugin_interface::geyser_plugin_interface::{
-    GeyserPlugin, GeyserPluginError, Result as PluginResult, SlotStatus,
+    GeyserPlugin, GeyserPluginError, ReplicaAccountInfoVersions, ReplicaBlockInfoVersions,
+    ReplicaTransactionInfoVersions, Result as PluginResult, SlotStatus,
 };
 use solana_sdk::{
     hash::{hashv, Hash},
     pubkey::Pubkey,
     slot_hashes::SlotHashes,
+    vote::instruction::VoteInstruction,
 };
-use tokio::sync::{
-    broadcast,
-    mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender},
+use tokio::{
+    io::AsyncWriteExt,
+    net::TcpListener,
+    runtime::Runtime,
+    sync::{
+        broadcast,
+        mpsc::{unbounded_channel, UnboundedReceiver, UnboundedSender},
+    },
 };
 use types::{
     AccountHashAccumulator, AccountInfo, BankHashProof, BlockInfo, GeyserMessage,
-    SlotHashProofAccumulator, TransactionSigAccumulator, Update, VoteAccumulator,
+    SlotHashProofAccumulator, SlotInfo, TransactionInfo, TransactionSigAccumulator, Update,
+    VoteAccumulator, VoteInfo,
 };
 use util::{
     assemble_account_delta_inclusion_proof, calculate_root_and_proofs, hash_solana_account,
@@ -160,7 +169,7 @@ async fn process_messages(
     let mut raw_vote_accumulator: VoteAccumulator = HashMap::new();
     let mut processed_vote_accumulator: VoteAccumulator = HashMap::new();
 
-    let slothash_accumulator: SlotHashProofAccumulator = HashMap::new();
+    let _slothash_accumulator: SlotHashProofAccumulator = HashMap::new();
 
     let mut pending_updates: HashMap<Hash, Update> = HashMap::new();
 
@@ -324,6 +333,200 @@ impl GeyserPlugin for Plugin {
             process_messages(&mut geyser_receiver, tx_process_message, pubkeys_for_proofs).await;
         });
 
+        std::thread::spawn(move || {
+            let runtime = Runtime::new().unwrap();
+            runtime.block_on(async {
+                let listener = TcpListener::bind(&config.bind_address).await.unwrap();
+                loop {
+                    let (mut socket, _) = match listener.accept().await {
+                        Ok(connection) => connection,
+                        Err(e) => {
+                            error!("Failed to accept connection: {:?}", e);
+                            continue;
+                        }
+                    };
+                    let mut rx = tx.subscribe();
+                    tokio::spawn(async move {
+                        match rx.recv().await {
+                            Ok(update) => {
+                                let mut data = Vec::new();
+                                update.serialize(&mut data).unwrap();
+                                let _ = socket.write_all(&data).await;
+                            }
+                            Err(_) => {}
+                        }
+                    });
+                }
+            });
+        });
+
+        self.inner = Some(PluginInner {
+            startup_status: AtomicU8::new(0),
+            geyser_sender,
+        });
+
         Ok(())
     }
+
+    fn on_unload(&mut self) {
+        if let Some(inner) = self.inner.take() {
+            drop(inner.geyser_sender);
+        }
+    }
+
+    fn update_account(
+        &self,
+        account: solana_geyser_plugin_interface::geyser_plugin_interface::ReplicaAccountInfoVersions,
+        slot: solana_sdk::slot_history::Slot,
+        _is_startup: bool,
+    ) -> PluginResult<()> {
+        self.with_inner(|inner| {
+            let account = match account {
+                ReplicaAccountInfoVersions::V0_0_3(a) => a,
+                _ => {
+                    unreachable!("Only ReplicaAccountInfoVersions::V0_0_3 is supported")
+                }
+            };
+            let pubkey = Pubkey::try_from(account.pubkey).unwrap();
+            let owner = Pubkey::try_from(account.owner).unwrap();
+
+            let message = GeyserMessage::AccountMessage(AccountInfo {
+                pubkey,
+                lamports: account.lamports,
+                owner,
+                executable: account.executable,
+                rent_epoch: account.rent_epoch,
+                data: account.data.to_vec(),
+                write_version: account.write_version,
+                slot,
+            });
+            inner.send_message(message);
+            Ok(())
+        })
+    }
+
+    fn notify_end_of_startup(&self) -> PluginResult<()> {
+        let inner = self.inner.as_ref().expect("initialized");
+        inner
+            .startup_status
+            .fetch_or(STARTUP_END_OF_RECEIVED, Ordering::SeqCst);
+        Ok(())
+    }
+
+    fn update_slot_status(
+        &self,
+        slot: solana_sdk::slot_history::Slot,
+        _parent: Option<u64>,
+        status: SlotStatus,
+    ) -> PluginResult<()> {
+        let inner = self.inner.as_ref().expect("initialized");
+        if inner.startup_status.load(Ordering::SeqCst) == STARTUP_END_OF_RECEIVED
+            && status == SlotStatus::Processed
+        {
+            inner
+                .startup_status
+                .fetch_or(STARTUP_PROCESSED_RECEIVED, Ordering::SeqCst);
+        }
+
+        self.with_inner(|inner| {
+            let message = GeyserMessage::SlotMessage(SlotInfo { slot, status });
+            inner.send_message(message);
+            Ok(())
+        })
+    }
+
+    fn notify_transaction(
+        &self,
+        transaction: solana_geyser_plugin_interface::geyser_plugin_interface::ReplicaTransactionInfoVersions,
+        slot: solana_sdk::slot_history::Slot,
+    ) -> PluginResult<()> {
+        self.with_inner(|inner| {
+            let transaction = match transaction {
+                ReplicaTransactionInfoVersions::V0_0_2(t) => t,
+                _ => {
+                    unreachable!("Only ReplicaTransactionInfoVersions::V0_0_2 is supported")
+                }
+            };
+
+            if transaction.transaction.is_simple_vote_transaction() {
+                match transaction.transaction.message() {
+                    solana_sdk::message::SanitizedMessage::Legacy(legacy_message) => {
+                        let vote_instruction: VoteInstruction =
+                            bincode::deserialize(&legacy_message.message.instructions[0].data)
+                                .unwrap();
+                        let sig = transaction.transaction.signatures()[0];
+                        match vote_instruction {
+                            VoteInstruction::CompactUpdateVoteState(state_update) => {
+                                let vote_message = GeyserMessage::VoteMessage(VoteInfo {
+                                    slot,
+                                    signature: sig,
+                                    vote_for_slot: state_update.lockouts
+                                        [state_update.lockouts.len() - 1]
+                                        .slot(),
+                                    vote_for_hash: state_update.hash,
+                                    message: legacy_message.message.clone().into_owned(),
+                                });
+                                inner.send_message(vote_message);
+                            }
+                            _ => {}
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            let message = GeyserMessage::TransactionMessage(TransactionInfo {
+                slot,
+                num_sigs: transaction.transaction.signatures().len() as u64,
+            });
+            inner.send_message(message);
+            Ok(())
+        })
+    }
+
+    fn notify_entry(
+        &self,
+        _entry: solana_geyser_plugin_interface::geyser_plugin_interface::ReplicaEntryInfoVersions,
+    ) -> PluginResult<()> {
+        Ok(())
+    }
+
+    fn notify_block_metadata(
+        &self,
+        blockinfo: solana_geyser_plugin_interface::geyser_plugin_interface::ReplicaBlockInfoVersions,
+    ) -> PluginResult<()> {
+        self.with_inner(|inner| {
+            let blockinfo = match blockinfo {
+                ReplicaBlockInfoVersions::V0_0_2(info) => info,
+                _ => {
+                    unreachable!("Only ReplicaBlockInfoVersions::V0_0_1 is supported")
+                }
+            };
+            let message = GeyserMessage::BlockMessage((blockinfo).into());
+            inner.send_message(message);
+
+            Ok(())
+        })
+    }
+
+    fn account_data_notifications_enabled(&self) -> bool {
+        true
+    }
+
+    fn transaction_notifications_enabled(&self) -> bool {
+        true
+    }
+
+    fn entry_notifications_enabled(&self) -> bool {
+        false
+    }
+}
+
+#[no_mangle]
+#[allow(improper_ctypes_definitions)]
+/// # Safety
+/// This function returns the Plugin pointer as trait GeyserPlugin.
+pub unsafe extern "C" fn _create_plugin() -> *mut dyn GeyserPlugin {
+    let plugin = Plugin::default();
+    let plugin: Box<dyn GeyserPlugin> = Box::new(plugin);
+    Box::into_raw(plugin)
 }
