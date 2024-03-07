@@ -7,11 +7,14 @@ use solana_program::{
     keccak::{hashv, Hash},
     msg,
     program::invoke_signed,
+    program_error::ProgramError,
     pubkey::Pubkey,
     rent::Rent,
     system_instruction,
     sysvar::Sysvar,
 };
+
+mod instructions;
 
 entrypoint!(process_instruction);
 
@@ -25,13 +28,23 @@ pub fn process_instruction(
     Ok(())
 }
 
-pub fn create_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], bump: u8) -> ProgramResult {
+
+pub fn update_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], bump: u8) -> ProgramResult {
     let accounts_iter = &mut accounts.iter();
     let creator_account = next_account_info(accounts_iter)?;
     let source_account = next_account_info(accounts_iter)?;
     let copy_account = next_account_info(accounts_iter)?;
     let system_program_account = next_account_info(accounts_iter)?;
     let clock_account = next_account_info(accounts_iter)?;
+
+    let (pda, _bump) = Pubkey::find_program_address(
+        &[
+            CopyAccount::SEED_PREFIX.as_bytes(),
+            source_account.key.as_ref(),
+        ],
+        &program_id,
+    );
+    assert_eq!(copy_account.key, &pda);
 
     let acc = &source_account;
     let clock = Clock::from_account_info(&clock_account)?;
@@ -47,33 +60,7 @@ pub fn create_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], bump: u8)
         acc.owner,
         acc.rent_epoch,
     );
-
-    // check account exist, if does not exist, create it
-    if let Err(_) = copy_account.try_borrow_data() {
-        let rent = Rent::get()?;
-        let lamports = rent.minimum_balance(copy_account.data_len());
-        invoke_signed(
-            &system_instruction::create_account(
-                creator_account.key,
-                copy_account.key,
-                lamports,
-                copy_account.data_len() as u64,
-                program_id,
-            ),
-            &[
-                creator_account.clone(),
-                copy_account.clone(),
-                system_program_account.clone(),
-            ],
-            &[&[
-                CopyAccount::SEED_PREFIX.as_ref(),
-                creator_account.key.as_ref(),
-                &[bump],
-            ]],
-        )?;
-    }
-
-    let mut ca = CopyAccount::try_from_slice(&copy_account.data.borrow())?;
+    let mut ca = CopyAccount::new([0u8; 32], 0);
     ca.accumulate_hash(&account_hash.to_bytes(), current_slot_num);
     msg!(
         "slot: {:?}, triggering account hash: {:?}, accumulated hash: {:?}",
@@ -81,7 +68,6 @@ pub fn create_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], bump: u8)
         account_hash,
         ca.digest
     );
-
     Ok(())
 }
 
