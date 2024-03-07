@@ -36,8 +36,8 @@ use util::{
 };
 
 mod config;
-mod types;
-mod util;
+pub mod types;
+pub mod util;
 
 pub const SLOT_HASH_ACCOUNT: &str = "SysvarS1otHashes111111111111111111111111111";
 const STARTUP_END_OF_RECEIVED: u8 = 1 << 0;

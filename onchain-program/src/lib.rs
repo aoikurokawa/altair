@@ -48,15 +48,6 @@ pub fn create_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], bump: u8)
         acc.rent_epoch,
     );
 
-    let mut ca = CopyAccount::try_from_slice(&copy_account.data.borrow())?;
-    ca.accumulate_hash(&account_hash.to_bytes(), current_slot_num);
-    msg!(
-        "slot: {:?}, triggering account hash: {:?}, accumulated hash: {:?}",
-        current_slot_num,
-        account_hash,
-        ca.digest
-    );
-
     // check account exist, if does not exist, create it
     if let Err(_) = copy_account.try_borrow_data() {
         let rent = Rent::get()?;
@@ -82,6 +73,15 @@ pub fn create_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], bump: u8)
         )?;
     }
 
+    let mut ca = CopyAccount::try_from_slice(&copy_account.data.borrow())?;
+    ca.accumulate_hash(&account_hash.to_bytes(), current_slot_num);
+    msg!(
+        "slot: {:?}, triggering account hash: {:?}, accumulated hash: {:?}",
+        current_slot_num,
+        account_hash,
+        ca.digest
+    );
+
     Ok(())
 }
 
@@ -103,7 +103,7 @@ pub fn account_hasher(
 
 #[derive(Debug, BorshDeserialize, BorshSerialize)]
 pub struct CopyAccount {
-    digest: [u8; 32],
+    pub digest: [u8; 32],
     slot: u64,
 }
 
