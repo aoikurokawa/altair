@@ -4,7 +4,7 @@ use account_proof_geyser::{types::Update, util::verify_leaves_against_bankhash};
 use anyhow::anyhow;
 use borsh::BorshDeserialize;
 use futures_util::{SinkExt, StreamExt};
-use onchain_program::{account_hasher, CopyAccount};
+use onchain_program::{instructions::account_hasher, CopyAccount};
 use rand::{rngs::StdRng, Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 use shred::{ShredDef, ShredResult};
@@ -146,7 +146,7 @@ impl Client {
             &program_id,
         );
 
-        match rpc_client.get_account(pda) {
+        match rpc_client.get_account(&pda) {
             Ok(_acc) => {
                 let accounts = vec![
                     AccountMeta::new(creator_account, true),
