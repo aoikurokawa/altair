@@ -36,7 +36,7 @@ impl Instruction {
     }
 }
 
-pub fn create_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], bump: u8) -> ProgramResult {
+pub fn create_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], _bump: u8) -> ProgramResult {
     let accounts_iter = &mut accounts.iter();
     let creator_account = next_account_info(accounts_iter)?;
     let source_account = next_account_info(accounts_iter)?;
@@ -44,7 +44,7 @@ pub fn create_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], bump: u8)
     let _system_program_account = next_account_info(accounts_iter)?;
     let _clock_account = next_account_info(accounts_iter)?;
 
-    let (pda, _bump) = Pubkey::find_program_address(
+    let (pda, bump) = Pubkey::find_program_address(
         &[
             CopyAccount::SEED_PREFIX.as_bytes(),
             source_account.key.as_ref(),
@@ -53,22 +53,6 @@ pub fn create_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], bump: u8)
     );
     assert_eq!(copy_account.key, &pda);
 
-    // let acc = &source_account;
-    // let clock = Clock::from_account_info(&clock_account)?;
-    // let current_slot_num = clock.slot;
-
-    // let lamport_ref = acc.lamports.borrow();
-    // let data_ref = acc.data.borrow();
-
-    // let account_hash = account_hasher(
-    //     &acc.key,
-    //     **lamport_ref,
-    //     &data_ref,
-    //     acc.owner,
-    //     acc.rent_epoch,
-    // );
-
-    // check account exist, if does not exist, create it
     let rent = Rent::get()?;
     let lamports = rent.minimum_balance(copy_account.data_len());
     invoke_signed(
@@ -82,7 +66,7 @@ pub fn create_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], bump: u8)
         &[creator_account.clone(), copy_account.clone()],
         &[&[
             CopyAccount::SEED_PREFIX.as_ref(),
-            source_account.key.as_ref(),
+            creator_account.key.as_ref(),
             &[bump],
         ]],
     )?;

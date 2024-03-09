@@ -152,57 +152,16 @@ impl Client {
             &program_id,
         );
 
-        match rpc_client.get_account(&pda) {
+        let instruction_data = match rpc_client.get_account(&pda) {
             Ok(_acc) => {
                 println!("updating account");
-                let accounts = vec![
-                    AccountMeta::new(creator_account, true),
-                    AccountMeta::new(*source_account, false),
-                    AccountMeta::new(pda, false),
-                    AccountMeta::new(system_program::id(), false),
-                    AccountMeta::new(sysvar::clock::id(), false),
-                ];
-
-                let instruction_data = InstructionData { varint: 1, bump };
-                let instruction = Instruction::new_with_borsh(program_id, &instruction_data, accounts);
-                let message =
-                    solana_sdk::message::Message::new(&[instruction], Some(&creator_account));
-                let recent_blockhash = rpc_client
-                    .get_latest_blockhash()
-                    .expect("get latest block hash");
-
-                let transaction = Transaction::new(&[&self.signer], message, recent_blockhash);
-                let transaction_sig = rpc_client
-                    .send_and_confirm_transaction(&transaction)
-                    .expect("send and confirm transaction");
-                println!("Transaction Signature: {}", transaction_sig);
+                InstructionData { varint: 1, bump }
             }
             Err(_e) => {
                 println!("creating account");
-                let accounts = vec![
-                    AccountMeta::new(creator_account, true),
-                    AccountMeta::new(*source_account, false),
-                    AccountMeta::new(pda, false),
-                    AccountMeta::new(system_program::id(), false),
-                    AccountMeta::new(sysvar::clock::id(), false),
-                ];
-
-                let instruction_data = InstructionData { varint: 0, bump };
-                let instruction =
-                    Instruction::new_with_borsh(program_id, &instruction_data, accounts);
-                let message =
-                    solana_sdk::message::Message::new(&[instruction], Some(&creator_account));
-                let recent_blockhash = rpc_client
-                    .get_latest_blockhash()
-                    .expect("get latest block hash");
-
-                let transaction = Transaction::new(&[&self.signer], message, recent_blockhash);
-                let transaction_sig = rpc_client
-                    .send_and_confirm_transaction(&transaction)
-                    .expect("send and confirm transaction");
-                println!("Transaction Signature: {}", transaction_sig);
+                InstructionData { varint: 0, bump }
             }
-        }
+        };
 
         let accounts = vec![
             AccountMeta::new(creator_account, true),
@@ -212,7 +171,7 @@ impl Client {
             AccountMeta::new(sysvar::clock::id(), false),
         ];
 
-        let instruction = Instruction::new_with_borsh(program_id, &bump, accounts);
+        let instruction = Instruction::new_with_borsh(program_id, &instruction_data, accounts);
         let message = solana_sdk::message::Message::new(&[instruction], Some(&creator_account));
         let recent_blockhash = rpc_client
             .get_latest_blockhash()
@@ -222,11 +181,8 @@ impl Client {
         let transaction_sig = rpc_client
             .send_and_confirm_transaction(&transaction)
             .expect("send and confirm transaction");
-        println!(
-            "Transaction https://explorer.solana.com/tx/{}?cluster=devnet",
-            transaction_sig
-        );
 
+        println!("Transaction Signature: {}", transaction_sig);
         Ok(transaction_sig)
     }
 
