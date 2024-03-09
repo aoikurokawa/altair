@@ -1,12 +1,26 @@
 # Altair
 
+Light Clients
+Three things need to be proved in order for clients to verify state: Consensus(validators selected a block), execution(the block transaction were applied correctly), and data availability(nodes are string the block data). 
+
+SPV Program
+Client-facing interface for the inter-chain SPV system, manages participant roles.
+
+
+`accounts_delta_hash`
+It is part of the `BankHash` attested by the validator set.
+
 ## Program ID
 3Nqwtq952ZYVG7tq8HmixKZ6WXamn6AWd4o3dhyrPNaF
 
 
 ## References
+Light Clients
+- [SoK: Blockchain Light Clients](https://eprint.iacr.org/2021/1657.pdf)
+
 SPV
 - https://github.com/Sovereign-Labs/solana-proofs/tree/master
+- [Inter-chain Transaction Verification](https://docs.solanalabs.com/proposals/interchain-transaction-verification)
 
 Geyser Plugins
 - https://www.helius.dev/blog/solana-geyser-plugins-streaming-data-at-the-speed-of-light
