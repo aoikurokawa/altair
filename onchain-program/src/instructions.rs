@@ -1,5 +1,7 @@
+use borsh::BorshSerialize;
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
+    borsh1::try_from_slice_unchecked,
     clock::Clock,
     entrypoint::ProgramResult,
     hash::{hashv, Hash},
@@ -24,9 +26,7 @@ impl Instruction {
         let (&variant, _) = input
             .split_first()
             .ok_or(ProgramError::InvalidInstructionData)?;
-        let (&bump, _) = input
-            .split_first()
-            .ok_or(ProgramError::InvalidArgument)?;
+        let (&bump, _) = input.split_first().ok_or(ProgramError::InvalidArgument)?;
 
         Ok(match variant {
             0 => Self::Create { bump },
@@ -41,8 +41,8 @@ pub fn create_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], _bump: u8
     let creator_account = next_account_info(accounts_iter)?;
     let source_account = next_account_info(accounts_iter)?;
     let copy_account = next_account_info(accounts_iter)?;
-    let _system_program_account = next_account_info(accounts_iter)?;
-    let _clock_account = next_account_info(accounts_iter)?;
+    let _system_program = next_account_info(accounts_iter)?;
+    let clock_account = next_account_info(accounts_iter)?;
 
     let (pda, bump) = Pubkey::find_program_address(
         &[
@@ -54,22 +54,35 @@ pub fn create_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], _bump: u8
     assert_eq!(copy_account.key, &pda);
 
     let rent = Rent::get()?;
-    let lamports = rent.minimum_balance(copy_account.data_len());
+    let lamports = rent.minimum_balance(CopyAccount::ACCOUNT_SPACE);
+
+    msg!("Creating Copy Account at {:?}", pda);
     invoke_signed(
         &system_instruction::create_account(
             creator_account.key,
             copy_account.key,
             lamports,
-            copy_account.data_len() as u64,
+            CopyAccount::ACCOUNT_SPACE as u64,
             program_id,
         ),
         &[creator_account.clone(), copy_account.clone()],
         &[&[
             CopyAccount::SEED_PREFIX.as_ref(),
-            creator_account.key.as_ref(),
+            source_account.key.as_ref(),
             &[bump],
         ]],
     )?;
+
+    let mut account_data =
+        try_from_slice_unchecked::<CopyAccount>(&copy_account.data.borrow()).unwrap();
+
+    account_data.digest = [0u8; 32];
+
+    let clock = Clock::from_account_info(&clock_account)?;
+    let current_slot_num = clock.slot;
+    account_data.slot = current_slot_num;
+
+    account_data.serialize(&mut &mut copy_account.data.borrow_mut()[..])?;
 
     Ok(())
 }
@@ -105,7 +118,8 @@ pub fn update_copy_hash(program_id: &Pubkey, accounts: &[AccountInfo], _bump: u8
         acc.owner,
         acc.rent_epoch,
     );
-    let mut ca = CopyAccount::new([0u8; 32], 0);
+
+    let mut ca = try_from_slice_unchecked::<CopyAccount>(&copy_account.data.borrow()).unwrap();
     ca.accumulate_hash(&account_hash.to_bytes(), current_slot_num);
     msg!(
         "slot: {:?}, triggering account hash: {:?}, accumulated hash: {:?}",
