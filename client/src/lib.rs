@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use account_proof_geyser::{types::Update, util::verify_leaves_against_bankhash};
 use anyhow::anyhow;
-use borsh::BorshDeserialize;
+use borsh::{BorshDeserialize, BorshSerialize};
 use futures_util::{SinkExt, StreamExt};
 use onchain_program::{instructions::account_hasher, CopyAccount};
 use rand::{rngs::StdRng, Rng, SeedableRng};
@@ -113,6 +113,12 @@ pub struct Client {
     signer: Keypair,
 }
 
+#[derive(BorshSerialize)]
+pub struct InstructionData {
+    varint: u8,
+    bump: u8,
+}
+
 impl Client {
     pub fn new(rpc: String, signer: Keypair) -> Self {
         Self { rpc, signer }
@@ -148,6 +154,7 @@ impl Client {
 
         match rpc_client.get_account(&pda) {
             Ok(_acc) => {
+                println!("updating account");
                 let accounts = vec![
                     AccountMeta::new(creator_account, true),
                     AccountMeta::new(*source_account, false),
@@ -156,7 +163,8 @@ impl Client {
                     AccountMeta::new(sysvar::clock::id(), false),
                 ];
 
-                let instruction = Instruction::new_with_borsh(program_id, &bump, accounts);
+                let instruction_data = InstructionData { varint: 1, bump };
+                let instruction = Instruction::new_with_borsh(program_id, &instruction_data, accounts);
                 let message =
                     solana_sdk::message::Message::new(&[instruction], Some(&creator_account));
                 let recent_blockhash = rpc_client
@@ -167,8 +175,10 @@ impl Client {
                 let transaction_sig = rpc_client
                     .send_and_confirm_transaction(&transaction)
                     .expect("send and confirm transaction");
+                println!("Transaction Signature: {}", transaction_sig);
             }
             Err(_e) => {
+                println!("creating account");
                 let accounts = vec![
                     AccountMeta::new(creator_account, true),
                     AccountMeta::new(*source_account, false),
@@ -177,7 +187,9 @@ impl Client {
                     AccountMeta::new(sysvar::clock::id(), false),
                 ];
 
-                let instruction = Instruction::new_with_borsh(program_id, &bump, accounts);
+                let instruction_data = InstructionData { varint: 0, bump };
+                let instruction =
+                    Instruction::new_with_borsh(program_id, &instruction_data, accounts);
                 let message =
                     solana_sdk::message::Message::new(&[instruction], Some(&creator_account));
                 let recent_blockhash = rpc_client
@@ -188,6 +200,7 @@ impl Client {
                 let transaction_sig = rpc_client
                     .send_and_confirm_transaction(&transaction)
                     .expect("send and confirm transaction");
+                println!("Transaction Signature: {}", transaction_sig);
             }
         }
 

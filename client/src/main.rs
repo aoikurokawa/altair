@@ -1,10 +1,10 @@
 use std::str::FromStr;
 
 use clap::{Parser, Subcommand};
-use client::{monitor_and_verify_updates, Client};
+use client::Client;
 use onchain_program::CopyAccount;
 use solana_sdk::{pubkey::Pubkey, signature::read_keypair_file};
-use tokio::{io, runtime::Runtime};
+use tokio::io;
 
 #[derive(Parser)]
 struct Cli {
@@ -52,7 +52,7 @@ async fn main() -> io::Result<()> {
             let signer = read_keypair_file(signer).unwrap();
             let account_for_proof = Pubkey::from_str(account_for_proof).unwrap();
             let client = Client::new(rpc_url.to_string(), signer);
-            let account_state_from_rpc = client.query_account(&account_for_proof);
+            // let account_state_from_rpc = client.query_account(&account_for_proof);
 
             // let monitor_handle = std::thread::spawn(move || {
             //     let rt = Runtime::new().unwrap(); // Create a new Tokio runtime

@@ -26,7 +26,7 @@ impl Instruction {
             .ok_or(ProgramError::InvalidInstructionData)?;
         let (&bump, _) = input
             .split_first()
-            .ok_or(ProgramError::InvalidInstructionData)?;
+            .ok_or(ProgramError::InvalidArgument)?;
 
         Ok(match variant {
             0 => Self::Create { bump },
